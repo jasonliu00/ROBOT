@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/Mstart.PNG</file>
+        <file>images/delay.PNG</file>
+        <file>images/light.PNG</file>
+        <file>images/Mstop.PNG</file>
+        <file>images/ring.PNG</file>
+        <file>images/show.PNG</file>
+        <file>images/AN_S.PNG</file>
+        <file>images/COUNTER.PNG</file>
+        <file>images/GZ_S.PNG</file>
+        <file>images/HY_S.PNG</file>
+        <file>images/SY_S.PNG</file>
+        <file>images/WSD_S.PNG</file>
+        <file>images/BZ_S.PNG</file>
+        <file>images/compell.png</file>
+        <file>images/download.png</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/save.png</file>
+        <file>images/title.png</file>
+        <file>images/CSB_S.PNG</file>
+        <file>images/KQ_S.PNG</file>
+        <file>images/XJ_S.PNG</file>
+        <file>images/ZL_S.PNG</file>
+        <file>images/MotorTS.PNG</file>
+        <file>images/MotorTS1.PNG</file>
+        <file>images/delete.png</file>
+    </qresource>
+</RCC>
