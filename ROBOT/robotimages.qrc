@@ -24,7 +24,8 @@
         <file>images/XJ_S.PNG</file>
         <file>images/ZL_S.PNG</file>
         <file>images/MotorTS.PNG</file>
-        <file>images/MotorTS1.PNG</file>
         <file>images/delete.png</file>
+        <file>images/MStopDlg.PNG</file>
+        <file>images/MStartDlg.PNG</file>
     </qresource>
 </RCC>

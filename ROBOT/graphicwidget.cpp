@@ -6,6 +6,9 @@
 #include "mygraphicspolygonitem.h"
 #include "mygraphicitem.h"
 #include "arrow.h"
+#include "itemtypes.h"
+#include "startmotordialog.h"
+#include "stopmotordialog.h"
 
 
 GraphicWidget::GraphicWidget(QWidget *parent) :
@@ -16,6 +19,7 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
     createAction();
     itemMenu = new QMenu(tr("Item"));
     itemMenu->addAction(deleteAction);
+    itemMenu->addAction(propertyAction);
     scene = new MyGraphicsScene(itemMenu, this);
     scene->setSceneRect(0, 0, 1000, 1000);
     createToolBox();
@@ -124,6 +128,8 @@ void GraphicWidget::createAction()
     deleteAction = new QAction(QIcon(":/images/delete.png"), tr("&delete"), this);
     deleteAction->setShortcut(tr("Delete"));
     connect(deleteAction, SIGNAL(triggered(bool)), this, SLOT(deleteItem()));
+    propertyAction = new QAction(tr("属性设置"));
+    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDialog()));
 }
 
 //void GraphicWidget::buttonGroupClicked(int id)
@@ -238,7 +244,29 @@ void GraphicWidget::deleteItem()
              qgraphicsitem_cast<MyZXQItem *>(item)->removeArrows();
          scene->removeItem(item);
          delete item;
-     }
+    }
+}
+
+void GraphicWidget::showPropertyDialog()
+{
+    QGraphicsItem *item = scene->selectedItems().first();
+    if(MyZXQItemType == item->type()){
+        MyZXQItem *zxqitem = static_cast<MyZXQItem*> (item);
+        switch(zxqitem->zxqType()){
+            case MyZXQItem::MotorStart:{
+                StartMotorDialog dlg;
+                dlg.exec();
+            break;
+            }
+            case MyZXQItem::MotorStop:{
+                StopMotorDialog dlg;
+                dlg.exec();
+            break;
+            }
+            default:
+                ;
+        }
+    }
 }
 
 //QWidget *GraphicWidget::createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType, const QString &image)

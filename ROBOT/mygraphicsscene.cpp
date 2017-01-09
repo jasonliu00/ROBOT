@@ -1,7 +1,9 @@
+
 #include "mygraphicsscene.h"
 #include <QGraphicsSceneMouseEvent>
 #include "mygraphicsellipseitem.h"
 #include "arrow.h"
+#include "itemtypes.h"
 #include <QMessageBox>
 
 MyGraphicsScene::MyGraphicsScene(QMenu *menu, QObject *parent)
@@ -66,6 +68,18 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         default:
             ;
     }
+//    QGraphicsItem *tempItem = itemAt(mouseEvent->pos(), QTransform());
+//    if(MyZXQItemType == tempItem->type()){
+//        MyZXQItem *item = static_cast<MyZXQItem*>(tempItem);
+//        if(item->hoverState()){
+//            line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
+//                                        mouseEvent->scenePos()));
+//            line->setPen(QPen(Qt::red, 1.5, Qt::DashLine,
+//                              Qt::RoundCap, Qt::MiterJoin));
+//            addItem(line);
+//            myMode = InsertLine;
+//        }
+//    }
 
     QGraphicsScene::mousePressEvent(mouseEvent);
 }

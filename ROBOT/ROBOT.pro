@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     motorstartdialog.cpp \
     mycgqitem.cpp \
     myzxqitem.cpp \
-    arrow.cpp
+    arrow.cpp \
+    startmotordialog.cpp \
+    stopmotordialog.cpp
 
 HEADERS  += robotmainwindow.h \
     mygraphicitem.h \
@@ -34,11 +36,16 @@ HEADERS  += robotmainwindow.h \
     motorstartdialog.h \
     mycgqitem.h \
     myzxqitem.h \
-    arrow.h
+    arrow.h \
+    itemtypes.h \
+    startmotordialog.h \
+    stopmotordialog.h
 
 FORMS    += robotmainwindow.ui \
     graphicwidget.ui \
-    motorstartdialog.ui
+    motorstartdialog.ui \
+    startmotordialog.ui \
+    stopmotordialog.ui
 
 RESOURCES += \
     robotimages.qrc

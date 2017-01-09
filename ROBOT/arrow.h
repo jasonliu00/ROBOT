@@ -2,6 +2,7 @@
 #define ARROW_H
 
 #include "myzxqitem.h"
+#include "itemtypes.h"
 #include <QGraphicsLineItem>
 
 
@@ -19,7 +20,7 @@ QT_END_NAMESPACE
 class Arrow : public QGraphicsLineItem
 {
 public:
-    enum { Type = UserType + 17 };
+    enum { Type = ArrowItemType};
 
     Arrow(MyZXQItem *startItem, MyZXQItem *endItem,
       QGraphicsItem *parent = 0);

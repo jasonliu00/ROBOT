@@ -59,6 +59,7 @@ private:
     InsertItemType myItemType;
 
     QAction *deleteAction;
+    QAction *propertyAction;
     QMenu *itemMenu;
 
 
@@ -73,6 +74,7 @@ private slots:
     void cgqItemInserted(MyCGQItem *item);
     void zxqItemInserted(MyZXQItem *item);
     void deleteItem();
+    void showPropertyDialog();
 };
 
 #endif // GRAPHICWIDGET_H

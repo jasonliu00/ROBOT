@@ -2,8 +2,12 @@
 #include <QtWidgets>
 #include "mygraphicsscene.h"
 #include "arrow.h"
+#include "startmotordialog.h"
+#include "stopmotordialog.h"
+#include <QAction>
+
 MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *parent)
-    :QGraphicsPolygonItem(parent)
+    :QObject(), QGraphicsPolygonItem(parent)
     ,myZXQType(zxqtype)
     ,isHover(false)
 {
@@ -16,6 +20,11 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     myContextMenu = menu;
     myPolygon << QPointF(-50.0, -20.0) << QPointF(50.0, -20.0)
               << QPointF(50.0, 20.0) << QPointF(-50.0, 20.0);
+
+//    if(int(myZXQType) < 1){
+//        createAction();
+//        myContextMenu->addAction(propertyAction);
+//    }
 
     setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -87,6 +96,7 @@ void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
+    qDebug()<< "myZXQType in contextMenuEvent() is " << myZXQType;
     myContextMenu->exec(event->screenPos());
 }
 
@@ -163,6 +173,25 @@ void MyZXQItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsItem::mousePressEvent(event);
 }
 
+//void MyZXQItem::showPropertyDlg()
+//{
+//    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
+//    switch(myZXQType){
+//        case MotorStart:{
+//            StartMotorDialog dlg;
+//            dlg.exec();
+//        break;
+//        }
+//        case MotorStop:{
+//            StopMotorDialog dlg;
+//            dlg.exec();
+//        break;
+//        }
+//        default:
+//            ;
+//    }
+//}
+
 void MyZXQItem::drawInArc(QPainter *painter)
 {
     //QPen::QPen(const QBrush &brush, qreal width,
@@ -188,3 +217,10 @@ void MyZXQItem::drawOutArc(QPainter *painter)
     painter->drawLine(point1, point2);
     painter->drawLine(point2, point3);
 }
+
+//void MyZXQItem::createAction()
+//{
+//    propertyAction = new QAction(tr("属性设置"));
+//    propertyAction->setCheckable(false);
+//    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDlg()));
+//}

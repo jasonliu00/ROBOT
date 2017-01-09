@@ -1,20 +1,23 @@
 #ifndef MYZXQITEM_H
 #define MYZXQITEM_H
 #include <QGraphicsPolygonItem>
+#include "itemtypes.h"
 
 class Arrow;
+class QAction;
 
-class MyZXQItem : public QGraphicsPolygonItem
+class MyZXQItem : public QObject, public QGraphicsPolygonItem
 {
-
+    Q_OBJECT
 public:
-    enum { Type = UserType + 16 };
+    enum { Type = MyZXQItemType };
     enum ZXQType{MotorStart = 0, MotorStop, Show, Light, Ring, Delay};
     QString ZXQName[6] = {"马达启动", "马达停止", "显示", "指示灯", "蜂鸣器", "延时"};
     MyZXQItem(QMenu *menu, ZXQType zxqtype, QGraphicsItem *parent = Q_NULLPTR);
     QPixmap image() const;
     int type() const Q_DECL_OVERRIDE { return Type;}
     ZXQType zxqType() const{return myZXQType;}
+    bool hoverState() const{return isHover;}
 
     void removeArrow(Arrow *arrow);
     void removeArrows();
@@ -32,7 +35,8 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
+private slots:
+//    void showPropertyDlg();
 signals:
 //    void readyToDrawLine(void);
 private:
@@ -51,8 +55,11 @@ private:
 
     QList<Arrow *> arrows;
 
+    QAction *propertyAction;
+
     void drawInArc(QPainter *painter);
     void drawOutArc(QPainter *painter);
+//    void createAction();
 };
 
 
