@@ -11,6 +11,10 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     ,myZXQType(zxqtype)
     ,isHover(false)
 {
+    for(int i = 0; i < MS_setting.num; i++){
+        MS_setting.motorChecked[i] = false;
+        MS_setting.motorPower[i] = 80;
+    }
     inArea = QRectF(-6, -27, 12, 7);
     outArea = QRectF(-6, 20, 12, 7);
 
@@ -21,10 +25,7 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     myPolygon << QPointF(-50.0, -20.0) << QPointF(50.0, -20.0)
               << QPointF(50.0, 20.0) << QPointF(-50.0, 20.0);
 
-//    if(int(myZXQType) < 1){
-//        createAction();
-//        myContextMenu->addAction(propertyAction);
-//    }
+    createContextMenu();
 
     setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -71,6 +72,15 @@ void MyZXQItem::addArrow(Arrow *arrow)
     arrows.append(arrow);
 }
 
+void MyZXQItem::setData(MSData data)
+{
+    int num = data.num;
+    for(int i = 0; i < num; i++){
+        MS_setting.motorChecked[i] = data.motorChecked[i];
+        MS_setting.motorPower[i] = data.motorPower[i];
+    }
+}
+
 QPointF MyZXQItem::inPosToScene() const
 {
     return mapToScene(inPoint);
@@ -97,7 +107,8 @@ void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     scene()->clearSelection();
     setSelected(true);
     qDebug()<< "myZXQType in contextMenuEvent() is " << myZXQType;
-    myContextMenu->exec(event->screenPos());
+   // myContextMenu->exec(event->screenPos());
+    contextmenu->exec(event->screenPos());
 }
 
 void MyZXQItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -173,24 +184,26 @@ void MyZXQItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsItem::mousePressEvent(event);
 }
 
-//void MyZXQItem::showPropertyDlg()
-//{
-//    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
-//    switch(myZXQType){
-//        case MotorStart:{
-//            StartMotorDialog dlg;
-//            dlg.exec();
-//        break;
-//        }
-//        case MotorStop:{
-//            StopMotorDialog dlg;
-//            dlg.exec();
-//        break;
-//        }
-//        default:
-//            ;
-//    }
-//}
+void MyZXQItem::showPropertyDlg()
+{
+    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
+    switch(myZXQType){
+        case MotorStart:{
+            StartMotorDialog dlg(MS_setting);
+            if(dlg.exec()){
+                setData(dlg.data());
+            }
+        break;
+        }
+        case MotorStop:{
+            StopMotorDialog dlg;
+            dlg.exec();
+        break;
+        }
+        default:
+            ;
+    }
+}
 
 void MyZXQItem::drawInArc(QPainter *painter)
 {
@@ -218,9 +231,19 @@ void MyZXQItem::drawOutArc(QPainter *painter)
     painter->drawLine(point2, point3);
 }
 
-//void MyZXQItem::createAction()
-//{
-//    propertyAction = new QAction(tr("属性设置"));
-//    propertyAction->setCheckable(false);
-//    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDlg()));
-//}
+void MyZXQItem::createContextMenu()
+{
+    QAction *action;
+    foreach(action, myContextMenu->actions()){
+        if(action->text() == tr("&delete"))
+            break;
+    }
+    contextmenu = new QMenu();
+    deleteAction = new QAction(action);
+    connect(deleteAction, SIGNAL(triggered(bool)), action, SIGNAL(triggered(bool)));
+    propertyAction = new QAction(tr("属性设置"));
+    propertyAction->setCheckable(false);
+    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDlg()));
+    contextmenu->addAction(deleteAction);
+    contextmenu->addAction(propertyAction);
+}

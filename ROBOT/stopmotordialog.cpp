@@ -1,11 +1,13 @@
 #include "stopmotordialog.h"
 #include "ui_stopmotordialog.h"
 
-bool StopMotorDialog::motorStop[] = {true, true, true, true};
+//bool StopMotorDialog::motorStop[] = {true, true, true, true};
 StopMotorDialog::StopMotorDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StopMotorDialog)
 {
+    for(int i = 0; i < 4; i++)
+        motorStop[i] = true;
     ui->setupUi(this);
     QString stylesheet("background-color:bisque;");
     setStyleSheet(stylesheet);

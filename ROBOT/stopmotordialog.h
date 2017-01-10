@@ -17,7 +17,7 @@ public:
 
 private:
     Ui::StopMotorDialog *ui;
-    static bool motorStop[4];
+    bool motorStop[4];
     void dialogInit();
     void createConnection();
 private slots:

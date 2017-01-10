@@ -2,6 +2,8 @@
 #define MYZXQITEM_H
 #include <QGraphicsPolygonItem>
 #include "itemtypes.h"
+#include "modelpropertydata.h"
+#include "modelpropertydata.h"
 
 class Arrow;
 class QAction;
@@ -23,6 +25,9 @@ public:
     void removeArrows();
     void addArrow(Arrow *arrow);
 
+    MSData data(){return MS_setting;}
+    void setData(MSData data);
+
     QPointF inPosToScene() const;
     QPointF outPosToScene() const;
 protected:
@@ -36,7 +41,7 @@ protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private slots:
-//    void showPropertyDlg();
+    void showPropertyDlg();
 signals:
 //    void readyToDrawLine(void);
 private:
@@ -55,11 +60,14 @@ private:
 
     QList<Arrow *> arrows;
 
+    QMenu *contextmenu;
     QAction *propertyAction;
+    QAction *deleteAction;
 
+    MSData MS_setting;
     void drawInArc(QPainter *painter);
     void drawOutArc(QPainter *painter);
-//    void createAction();
+    void createContextMenu();
 };
 
 

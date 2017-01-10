@@ -3,13 +3,14 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
-bool StartMotorDialog::motorChecked[] = {false, false, false, false};
-int StartMotorDialog::motorPower[] = {80, 80, 80, 80};
+//bool StartMotorDialog::motorChecked[] = {false, false, false, false};
+//int StartMotorDialog::motorPower[] = {80, 80, 80, 80};
 
-StartMotorDialog::StartMotorDialog(QWidget *parent) :
+StartMotorDialog::StartMotorDialog(MSData &data, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StartMotorDialog)
 {
+    setData(data);
     abletoclose = true;
     ui->setupUi(this);
 
@@ -35,10 +36,10 @@ void StartMotorDialog::dialogInit()
     ui->motor2CheckBox->setCheckable(true);
     ui->motor3CheckBox->setCheckable(true);
 
-    ui->motor0CheckBox->setChecked(motorChecked[0]);
-    ui->motor1CheckBox->setChecked(motorChecked[1]);
-    ui->motor2CheckBox->setChecked(motorChecked[2]);
-    ui->motor3CheckBox->setChecked(motorChecked[3]);
+    ui->motor0CheckBox->setChecked(settingData.motorChecked[0]);
+    ui->motor1CheckBox->setChecked(settingData.motorChecked[1]);
+    ui->motor2CheckBox->setChecked(settingData.motorChecked[2]);
+    ui->motor3CheckBox->setChecked(settingData.motorChecked[3]);
 
     QString stylesheet_edit("background-color:white;");
     ui->motor0LineEdit->setStyleSheet(stylesheet_edit);
@@ -46,15 +47,15 @@ void StartMotorDialog::dialogInit()
     ui->motor2LineEdit->setStyleSheet(stylesheet_edit);
     ui->motor3LineEdit->setStyleSheet(stylesheet_edit);
 
-    ui->motor0LineEdit->setText(QString::number(motorPower[0]));
-    ui->motor1LineEdit->setText(QString::number(motorPower[1]));
-    ui->motor2LineEdit->setText(QString::number(motorPower[2]));
-    ui->motor3LineEdit->setText(QString::number(motorPower[3]));
+    ui->motor0LineEdit->setText(QString::number(settingData.motorPower[0]));
+    ui->motor1LineEdit->setText(QString::number(settingData.motorPower[1]));
+    ui->motor2LineEdit->setText(QString::number(settingData.motorPower[2]));
+    ui->motor3LineEdit->setText(QString::number(settingData.motorPower[3]));
 
-    ui->motor0LineEdit->setEnabled(motorChecked[0]);
-    ui->motor1LineEdit->setEnabled(motorChecked[1]);
-    ui->motor2LineEdit->setEnabled(motorChecked[2]);
-    ui->motor3LineEdit->setEnabled(motorChecked[3]);
+    ui->motor0LineEdit->setEnabled(settingData.motorChecked[0]);
+    ui->motor1LineEdit->setEnabled(settingData.motorChecked[1]);
+    ui->motor2LineEdit->setEnabled(settingData.motorChecked[2]);
+    ui->motor3LineEdit->setEnabled(settingData.motorChecked[3]);
 
 
     ui->motor0Slider->setRange(-100, 100);
@@ -62,15 +63,15 @@ void StartMotorDialog::dialogInit()
     ui->motor2Slider->setRange(-100, 100);
     ui->motor3Slider->setRange(-100, 100);
 
-    ui->motor0Slider->setValue(motorPower[0]);
-    ui->motor1Slider->setValue(motorPower[1]);
-    ui->motor2Slider->setValue(motorPower[2]);
-    ui->motor3Slider->setValue(motorPower[3]);
+    ui->motor0Slider->setValue(settingData.motorPower[0]);
+    ui->motor1Slider->setValue(settingData.motorPower[1]);
+    ui->motor2Slider->setValue(settingData.motorPower[2]);
+    ui->motor3Slider->setValue(settingData.motorPower[3]);
 
-    ui->motor0Slider->setEnabled(motorChecked[0]);
-    ui->motor1Slider->setEnabled(motorChecked[1]);
-    ui->motor2Slider->setEnabled(motorChecked[2]);
-    ui->motor3Slider->setEnabled(motorChecked[3]);
+    ui->motor0Slider->setEnabled(settingData.motorChecked[0]);
+    ui->motor1Slider->setEnabled(settingData.motorChecked[1]);
+    ui->motor2Slider->setEnabled(settingData.motorChecked[2]);
+    ui->motor3Slider->setEnabled(settingData.motorChecked[3]);
 
 }
 
@@ -91,6 +92,15 @@ void StartMotorDialog::createConnection()
     connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(okButtonClicked()));
     connect(ui->cancleButton, SIGNAL(clicked(bool)), this, SLOT(cancleButtonClicked()));
 
+}
+
+void StartMotorDialog::setData(MSData data)
+{
+    int num = data.num;
+    for(int i = 0; i < num; i++){
+        settingData.motorChecked[i] = data.motorChecked[i];
+        settingData.motorPower[i] = data.motorPower[i];
+    }
 }
 
 void StartMotorDialog::checkBoxClicked()
@@ -177,7 +187,7 @@ void StartMotorDialog::sliderChanged(int value)
 
 void StartMotorDialog::okButtonClicked()
 {
-    QList<QLineEdit*> lineedits;
+    QVector<QLineEdit*> lineedits;
     lineedits << ui->motor0LineEdit << ui->motor1LineEdit
               << ui->motor2LineEdit << ui->motor3LineEdit;
     bool ok;
@@ -197,15 +207,16 @@ void StartMotorDialog::okButtonClicked()
         }
     }
 
-    motorPower[0] = ui->motor0Slider->value();
-    motorPower[1] = ui->motor1Slider->value();
-    motorPower[2] = ui->motor2Slider->value();
-    motorPower[3] = ui->motor3Slider->value();
+    settingData.motorPower[0] = ui->motor0Slider->value();
+    settingData.motorPower[1] = ui->motor1Slider->value();
+    settingData.motorPower[2] = ui->motor2Slider->value();
+    settingData.motorPower[3] = ui->motor3Slider->value();
 
-    motorChecked[0] = ui->motor0CheckBox->isChecked();
-    motorChecked[1] = ui->motor1CheckBox->isChecked();
-    motorChecked[2] = ui->motor2CheckBox->isChecked();
-    motorChecked[3] = ui->motor3CheckBox->isChecked();
+    settingData.motorChecked[0] = ui->motor0CheckBox->isChecked();
+    settingData.motorChecked[1] = ui->motor1CheckBox->isChecked();
+    settingData.motorChecked[2] = ui->motor2CheckBox->isChecked();
+    settingData.motorChecked[3] = ui->motor3CheckBox->isChecked();
+
     accept();
 }
 

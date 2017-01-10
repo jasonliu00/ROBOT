@@ -39,7 +39,8 @@ HEADERS  += robotmainwindow.h \
     arrow.h \
     itemtypes.h \
     startmotordialog.h \
-    stopmotordialog.h
+    stopmotordialog.h \
+    modelpropertydata.h
 
 FORMS    += robotmainwindow.ui \
     graphicwidget.ui \

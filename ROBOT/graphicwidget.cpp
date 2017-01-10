@@ -128,8 +128,8 @@ void GraphicWidget::createAction()
     deleteAction = new QAction(QIcon(":/images/delete.png"), tr("&delete"), this);
     deleteAction->setShortcut(tr("Delete"));
     connect(deleteAction, SIGNAL(triggered(bool)), this, SLOT(deleteItem()));
-    propertyAction = new QAction(tr("属性设置"));
-    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDialog()));
+//    propertyAction = new QAction(tr("属性设置"));
+//    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDialog()));
 }
 
 //void GraphicWidget::buttonGroupClicked(int id)
@@ -248,7 +248,7 @@ void GraphicWidget::deleteItem()
 }
 
 void GraphicWidget::showPropertyDialog()
-{
+{/*
     QGraphicsItem *item = scene->selectedItems().first();
     if(MyZXQItemType == item->type()){
         MyZXQItem *zxqitem = static_cast<MyZXQItem*> (item);
@@ -266,7 +266,7 @@ void GraphicWidget::showPropertyDialog()
             default:
                 ;
         }
-    }
+    }*/
 }
 
 //QWidget *GraphicWidget::createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType, const QString &image)
