@@ -11,9 +11,12 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     ,myZXQType(zxqtype)
     ,isHover(false)
 {
-    for(int i = 0; i < MS_setting.num; i++){
-        MS_setting.motorChecked[i] = false;
-        MS_setting.motorPower[i] = 80;
+    for(int i = 0; i < MStart_Setting.num; i++){
+        MStart_Setting.motorChecked[i] = false;
+        MStart_Setting.motorPower[i] = 80;
+    }
+    for(int i = 0; i < 4; i++){
+        MStop_Setting.motorChecked[i] = true;
     }
     inArea = QRectF(-6, -27, 12, 7);
     outArea = QRectF(-6, 20, 12, 7);
@@ -72,14 +75,6 @@ void MyZXQItem::addArrow(Arrow *arrow)
     arrows.append(arrow);
 }
 
-void MyZXQItem::setData(MSData data)
-{
-    int num = data.num;
-    for(int i = 0; i < num; i++){
-        MS_setting.motorChecked[i] = data.motorChecked[i];
-        MS_setting.motorPower[i] = data.motorPower[i];
-    }
-}
 
 QPointF MyZXQItem::inPosToScene() const
 {
@@ -106,7 +101,7 @@ void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    qDebug()<< "myZXQType in contextMenuEvent() is " << myZXQType;
+//    qDebug()<< "myZXQType in contextMenuEvent() is " << myZXQType;
    // myContextMenu->exec(event->screenPos());
     contextmenu->exec(event->screenPos());
 }
@@ -186,20 +181,36 @@ void MyZXQItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void MyZXQItem::showPropertyDlg()
 {
-    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
+//    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
     switch(myZXQType){
         case MotorStart:{
-            StartMotorDialog dlg(MS_setting);
+            StartMotorDialog dlg(MStart_Setting);
             if(dlg.exec()){
-                setData(dlg.data());
+                MStart_Setting.setData(dlg.data());
             }
         break;
         }
         case MotorStop:{
-            StopMotorDialog dlg;
-            dlg.exec();
+            StopMotorDialog dlg(MStop_Setting);
+            if(dlg.exec()){
+                MStop_Setting.setData(dlg.data());
+                QString temp = "";
+                if(MStop_Setting.motorChecked[0])
+                    temp += "0";
+                if(MStop_Setting.motorChecked[1])
+                    temp += "1";
+                if(MStop_Setting.motorChecked[2])
+                    temp += "2";
+                if(MStop_Setting.motorChecked[3])
+                    temp += "3";
+                if(temp == "0123")
+                    temp = "全";
+                myZXQName = "马达" + temp + "停";
+                update();
+            }
         break;
         }
+
         default:
             ;
     }
@@ -239,7 +250,7 @@ void MyZXQItem::createContextMenu()
             break;
     }
     contextmenu = new QMenu();
-    deleteAction = new QAction(action);
+    deleteAction = new QAction(QIcon(":/images/delete.png"), tr("&delete"));
     connect(deleteAction, SIGNAL(triggered(bool)), action, SIGNAL(triggered(bool)));
     propertyAction = new QAction(tr("属性设置"));
     propertyAction->setCheckable(false);

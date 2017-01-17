@@ -9,6 +9,7 @@
 #include "itemtypes.h"
 #include "startmotordialog.h"
 #include "stopmotordialog.h"
+#include <QSqlQuery>
 
 
 GraphicWidget::GraphicWidget(QWidget *parent) :
@@ -16,10 +17,24 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
     ui(new Ui::GraphicWidget)
 {
 //    ui->setupUi(this);
+    QSqlQuery query;
+    bool result = query.exec("CREATE TABLE IF NOT EXISTS property"
+               "("
+                   "NO	INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+                   "TYPE	VARCHAR(20) NOT NULL,"
+                   "NAME	VARCHAR(20) NOT NULL,"
+                   "OUT0    VARCHAR(20),"
+                   "OUT1    VARCHAR(20),"
+                   "CONTENT VARCHAR(40),"
+                   "UNIQUE INDEX (NO),"
+                   "PRIMARY KEY (NAME)"
+               ")ENGINE = InnoDB;");
+
+    qDebug() << "the query result is " << result;
     createAction();
     itemMenu = new QMenu(tr("Item"));
     itemMenu->addAction(deleteAction);
-    itemMenu->addAction(propertyAction);
+//    itemMenu->addAction(propertyAction);
     scene = new MyGraphicsScene(itemMenu, this);
     scene->setSceneRect(0, 0, 1000, 1000);
     createToolBox();
@@ -45,6 +60,10 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
 GraphicWidget::~GraphicWidget()
 {
     delete ui;
+    QSqlQuery query;
+    if(query.exec("DROP TABLE property")){
+        qDebug() << "TABLE property has been successfully dropped!";
+    }
 }
 
 void GraphicWidget::createToolBox()

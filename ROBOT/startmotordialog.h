@@ -14,9 +14,9 @@ class StartMotorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit StartMotorDialog(MSData &data, QWidget *parent = 0);
+    explicit StartMotorDialog(MStartData &data, QWidget *parent = 0);
     ~StartMotorDialog();
-    MSData data() const{return settingData;}
+    MStartData data() const{return settingData;}
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -25,9 +25,9 @@ private:
     Ui::StartMotorDialog *ui;
     void dialogInit();
     void createConnection();
-    MSData settingData;
+    MStartData settingData;
     bool abletoclose;
-    void setData(MSData data);
+    void setData(MStartData data);
 private slots:
     void checkBoxClicked();
     void lineEditChanged(QString str);

@@ -25,8 +25,8 @@ public:
     void removeArrows();
     void addArrow(Arrow *arrow);
 
-    MSData data(){return MS_setting;}
-    void setData(MSData data);
+    MStartData data(){return MStart_Setting;}
+//    void setData(MStartData data);
 
     QPointF inPosToScene() const;
     QPointF outPosToScene() const;
@@ -64,7 +64,8 @@ private:
     QAction *propertyAction;
     QAction *deleteAction;
 
-    MSData MS_setting;
+    MStartData MStart_Setting;
+    MStopData MStop_Setting;
     void drawInArc(QPainter *painter);
     void drawOutArc(QPainter *painter);
     void createContextMenu();

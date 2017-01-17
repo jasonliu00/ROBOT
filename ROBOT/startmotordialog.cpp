@@ -6,7 +6,7 @@
 //bool StartMotorDialog::motorChecked[] = {false, false, false, false};
 //int StartMotorDialog::motorPower[] = {80, 80, 80, 80};
 
-StartMotorDialog::StartMotorDialog(MSData &data, QWidget *parent) :
+StartMotorDialog::StartMotorDialog(MStartData &data, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StartMotorDialog)
 {
@@ -94,7 +94,7 @@ void StartMotorDialog::createConnection()
 
 }
 
-void StartMotorDialog::setData(MSData data)
+void StartMotorDialog::setData(MStartData data)
 {
     int num = data.num;
     for(int i = 0; i < num; i++){

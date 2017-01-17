@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     myzxqitem.cpp \
     arrow.cpp \
     startmotordialog.cpp \
-    stopmotordialog.cpp
+    stopmotordialog.cpp \
+    modelpropertydata.cpp
 
 HEADERS  += robotmainwindow.h \
     mygraphicitem.h \
