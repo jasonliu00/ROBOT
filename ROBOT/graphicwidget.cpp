@@ -20,14 +20,14 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
     QSqlQuery query;
     bool result = query.exec("CREATE TABLE IF NOT EXISTS property"
                "("
-                   "NO	INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                   "TYPE	VARCHAR(20) NOT NULL,"
-                   "NAME	VARCHAR(20) NOT NULL,"
-                   "OUT0    VARCHAR(20),"
-                   "OUT1    VARCHAR(20),"
-                   "CONTENT VARCHAR(40),"
-                   "UNIQUE INDEX (NO),"
-                   "PRIMARY KEY (NAME)"
+                   "no	INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+                   "type	VARCHAR(20) NOT NULL,"
+                   "name	VARCHAR(20) NOT NULL,"
+                   "out0    VARCHAR(20),"
+                   "out1    VARCHAR(20),"
+                   "content VARCHAR(40),"
+                   "UNIQUE INDEX (no),"
+                   "PRIMARY KEY (name)"
                ")ENGINE = InnoDB;");
 
     qDebug() << "the query result is " << result;
@@ -244,6 +244,7 @@ void GraphicWidget::zxqItemInserted(MyZXQItem *item)
 {
     zxqButtonGroup->button(static_cast<int>(item->zxqType()))->setChecked(false);
     scene->setMode(MyGraphicsScene::MoveItem);
+
 }
 
 void GraphicWidget::deleteItem()

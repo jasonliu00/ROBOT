@@ -24,6 +24,8 @@ public:
     void removeArrow(Arrow *arrow);
     void removeArrows();
     void addArrow(Arrow *arrow);
+    QString getName() const{return myname;}
+    void setName(QString &str){myname = str;}
 
     MStartData data(){return MStart_Setting;}
 //    void setData(MStartData data);
@@ -46,6 +48,7 @@ signals:
 //    void readyToDrawLine(void);
 private:
 
+    QString myname;                 //用于记录该模块在属性表中的唯一标识名字
     QMenu *myContextMenu;
     QPolygonF myPolygon;
     ZXQType myZXQType;

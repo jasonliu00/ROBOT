@@ -4,6 +4,9 @@
 #include "mygraphicsellipseitem.h"
 #include "arrow.h"
 #include "itemtypes.h"
+#include <QDebug>
+#include <QSqlQuery>
+#include <QSqlError>
 #include <QMessageBox>
 
 MyGraphicsScene::MyGraphicsScene(QMenu *menu, QObject *parent)
@@ -50,13 +53,39 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             cgqItem->setPos(mouseEvent->scenePos());
             emit cgqItemInserted(cgqItem);
         break;
-        case InsertZXQItem:
+        case InsertZXQItem:{
             zxqItem = new MyZXQItem(myItemMenu, zxqtype);
             addItem(zxqItem);
 //            connect(zxqItem, SIGNAL(readyToDrawLine()),
 //                    this, SLOT(readyToDrawLine()));
             zxqItem->setPos(mouseEvent->scenePos());
-            emit zxqItemInserted(zxqItem);
+            /****成功连线之后，更新属性表的out0字段，记录模块之间的连接关系****/
+            QSqlQuery query;
+            if(!query.exec("SELECT COUNT(name) AS name_count FROM property WHERE type = 'YJ';")){
+                QMessageBox::warning(NULL, "Query Error", "An Error has happened when compute the name_count");
+                return;
+            }
+            query.next();
+            int name_count = query.value("name_count").toInt();
+            QString myname = "YJ_" + QString().number(name_count);
+            zxqItem->setName(myname);        //将模块名字保存起来
+            query.prepare("INSERT INTO property(type,"
+                       "name,"
+                       "out0,"
+                       "out1,"
+                       "content)"
+                       "VALUES('YJ',"
+                       ":name,"
+                       "NULL,"
+                       "NULL,"
+                       "NULL);");
+            query.addBindValue(myname);
+            query.exec();
+            QString querystr = QString("INSERT INTO property(type, name, out0, out1, content)"
+                             "VALUES('YJ', %1, NULL, NULL, NULL);").arg(myname);
+            qDebug() << "the query string is " << querystr;
+            /*******************************************************/
+            emit zxqItemInserted(zxqItem);}
         break;
         case InsertLine:
             line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
@@ -122,6 +151,17 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             arrow->setZValue(-1000.0);
             addItem(arrow);
             arrow->updatePosition();
+
+            QSqlQuery query;
+            query.prepare("UPDATE property "   //语句之间注意空格，否则会发生语法错误导致，query失败
+                          "SET out0 = :end_item "
+                          "WHERE name = :start_item;");
+            qDebug() << "the endItem and startItem names are " << endItem->getName() << startItem->getName();
+            query.addBindValue(endItem->getName());
+            query.addBindValue(startItem->getName());
+            if(!query.exec()){
+                qDebug() << "UPDATE query failed!\n " << query.lastError().text();
+            }
         }
     }
 

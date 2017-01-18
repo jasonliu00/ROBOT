@@ -5,6 +5,9 @@
 #include "startmotordialog.h"
 #include "stopmotordialog.h"
 #include <QAction>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QDebug>
 
 MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *parent)
     :QObject(), QGraphicsPolygonItem(parent)
@@ -187,6 +190,47 @@ void MyZXQItem::showPropertyDlg()
             StartMotorDialog dlg(MStart_Setting);
             if(dlg.exec()){
                 MStart_Setting.setData(dlg.data());
+                QString strtoshow = "";
+                QString strtocontent = "";
+                if(MStart_Setting.motorChecked[0]){
+                    strtoshow += "0";
+                    strtocontent += ("RUN(0," +
+                                     QString().number(MStart_Setting.motorPower[0]) +
+                                     ");");
+                }
+                if(MStart_Setting.motorChecked[1]){
+                    strtoshow += "1";
+                    strtocontent += ("RUN(1," +
+                                     QString().number((MStart_Setting.motorPower[1])) +
+                                     ")");
+                }
+                if(MStart_Setting.motorChecked[2]){
+                    strtoshow += "1";
+                    strtocontent += ("RUN(1," +
+                                     QString().number((MStart_Setting.motorPower[2])) +
+                                     ")");
+                }
+                if(MStart_Setting.motorChecked[3]){
+                    strtoshow += "1";
+                    strtocontent += ("RUN(1," +
+                                     QString().number((MStart_Setting.motorPower[3])) +
+                                     ")");
+                }
+                /**********************/
+                QSqlQuery query;
+                query.prepare("UPDATE property "
+                              "SET content = :content "
+                              "WHERE name = :name;");
+                query.addBindValue(strtocontent);
+                query.addBindValue(this->getName());
+                if(!query.exec()){
+                    qDebug() << "UPDATE content query failed!\n" << query.lastError().text();
+                }
+                /**********************/
+                if(strtoshow == "0123")
+                    strtoshow = "全";
+                myZXQName = "马达" + strtoshow + "启动";
+                update();
             }
         break;
         }
@@ -194,18 +238,38 @@ void MyZXQItem::showPropertyDlg()
             StopMotorDialog dlg(MStop_Setting);
             if(dlg.exec()){
                 MStop_Setting.setData(dlg.data());
-                QString temp = "";
-                if(MStop_Setting.motorChecked[0])
-                    temp += "0";
-                if(MStop_Setting.motorChecked[1])
-                    temp += "1";
-                if(MStop_Setting.motorChecked[2])
-                    temp += "2";
-                if(MStop_Setting.motorChecked[3])
-                    temp += "3";
-                if(temp == "0123")
-                    temp = "全";
-                myZXQName = "马达" + temp + "停";
+                QString strtoshow = "";
+                QString strtocontent = "";
+                if(MStop_Setting.motorChecked[0]){
+                    strtocontent += "STOP(0);";
+                    strtoshow += "0";
+                }
+                if(MStop_Setting.motorChecked[1]){
+                    strtocontent += "STOP(1);";
+                    strtoshow += "1";
+                }
+                if(MStop_Setting.motorChecked[2]){
+                    strtocontent += "STOP(2);";
+                    strtoshow += "2";
+                }
+                if(MStop_Setting.motorChecked[3]){
+                    strtocontent += "STOP(3);";
+                    strtoshow += "3";
+                }
+                /**********更新属性表的content字段*********/
+                QSqlQuery query;
+                query.prepare("UPDATE property "
+                              "SET content = :content "
+                              "WHERE name = :modelname;");
+                query.addBindValue(strtocontent);
+                query.addBindValue(this->getName());
+                if(!query.exec()){
+                    qDebug() << "UPDATE content query failed!\n" << query.lastError().text();
+                }
+                /*****************************************/
+                if(strtoshow == "0123")
+                    strtoshow = "全";
+                myZXQName = "马达" + strtoshow + "停";
                 update();
             }
         break;
