@@ -69,9 +69,13 @@ private:
 
     MStartData MStart_Setting;
     MStopData MStop_Setting;
+    RingData ringsetting;
+    double delaytime;
+    bool lightstate;
     void drawInArc(QPainter *painter);
     void drawOutArc(QPainter *painter);
     void createContextMenu();
+    void propertySettingInit();
 };
 
 

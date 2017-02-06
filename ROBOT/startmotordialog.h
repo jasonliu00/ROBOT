@@ -19,14 +19,14 @@ public:
     MStartData data() const{return settingData;}
 
 protected:
-    void closeEvent(QCloseEvent *event);
+//    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::StartMotorDialog *ui;
     void dialogInit();
     void createConnection();
     MStartData settingData;
-    bool abletoclose;
+//    bool abletoclose;
     void setData(MStartData data);
 private slots:
     void checkBoxClicked();

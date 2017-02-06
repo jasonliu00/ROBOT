@@ -27,5 +27,9 @@
         <file>images/delete.png</file>
         <file>images/MStopDlg.PNG</file>
         <file>images/MStartDlg.PNG</file>
+        <file>images/delaydlg.PNG</file>
+        <file>images/lightdlg.PNG</file>
+        <file>images/ringdlg.PNG</file>
+        <file>images/showdlg.PNG</file>
     </qresource>
 </RCC>

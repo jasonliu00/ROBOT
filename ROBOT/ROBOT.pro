@@ -26,7 +26,11 @@ SOURCES += main.cpp\
     arrow.cpp \
     startmotordialog.cpp \
     stopmotordialog.cpp \
-    modelpropertydata.cpp
+    modelpropertydata.cpp \
+    lightdialog.cpp \
+    ringdialog.cpp \
+    showdialog.cpp \
+    delaydialog.cpp
 
 HEADERS  += robotmainwindow.h \
     mygraphicitem.h \
@@ -41,13 +45,21 @@ HEADERS  += robotmainwindow.h \
     itemtypes.h \
     startmotordialog.h \
     stopmotordialog.h \
-    modelpropertydata.h
+    modelpropertydata.h \
+    lightdialog.h \
+    ringdialog.h \
+    showdialog.h \
+    delaydialog.h
 
 FORMS    += robotmainwindow.ui \
     graphicwidget.ui \
     motorstartdialog.ui \
     startmotordialog.ui \
-    stopmotordialog.ui
+    stopmotordialog.ui \
+    lightdialog.ui \
+    ringdialog.ui \
+    showdialog.ui \
+    delaydialog.ui
 
 RESOURCES += \
     robotimages.qrc

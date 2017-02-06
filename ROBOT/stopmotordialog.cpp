@@ -7,6 +7,9 @@ StopMotorDialog::StopMotorDialog(MStopData &data, QWidget *parent) :
 {
     settingData.setData(data);
     ui->setupUi(this);
+    this->setWindowTitle(tr("马达停止模块"));
+    this->setWindowFlags(Qt::Drawer);
+
     QString stylesheet("background-color:bisque;");
     setStyleSheet(stylesheet);
     dialogInit();

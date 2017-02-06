@@ -4,6 +4,10 @@
 #include "arrow.h"
 #include "startmotordialog.h"
 #include "stopmotordialog.h"
+#include "lightdialog.h"
+#include "ringdialog.h"
+#include "showdialog.h"
+#include "delaydialog.h"
 #include <QAction>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -14,13 +18,7 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     ,myZXQType(zxqtype)
     ,isHover(false)
 {
-    for(int i = 0; i < MStart_Setting.num; i++){
-        MStart_Setting.motorChecked[i] = false;
-        MStart_Setting.motorPower[i] = 80;
-    }
-    for(int i = 0; i < 4; i++){
-        MStop_Setting.motorChecked[i] = true;
-    }
+    propertySettingInit();
     inArea = QRectF(-6, -27, 12, 7);
     outArea = QRectF(-6, 20, 12, 7);
 
@@ -274,7 +272,34 @@ void MyZXQItem::showPropertyDlg()
             }
         break;
         }
+        case Show:{
+            ShowDialog dlg;
+            if(dlg.exec()){
 
+            }
+        break;
+        }
+        case Light:{
+            LightDialog dlg(lightstate);
+            if(dlg.exec()){
+                lightstate = dlg.data();
+            }
+        break;
+        }
+        case Ring:{
+            RingDialog dlg(ringsetting);
+            if(dlg.exec()){
+                ringsetting = dlg.data();
+            }
+        break;
+        }
+        case Delay:{
+            DelayDialog dlg(delaytime);
+            if(dlg.exec()){
+                delaytime = dlg.data();
+            }
+        break;
+        }
         default:
             ;
     }
@@ -321,4 +346,21 @@ void MyZXQItem::createContextMenu()
     connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDlg()));
     contextmenu->addAction(deleteAction);
     contextmenu->addAction(propertyAction);
+}
+
+void MyZXQItem::propertySettingInit()
+{
+    for(int i = 0; i < MStart_Setting.num; i++){
+        MStart_Setting.motorChecked[i] = false;
+        MStart_Setting.motorPower[i] = 80;
+    }
+    for(int i = 0; i < 4; i++){
+        MStop_Setting.motorChecked[i] = true;
+    }
+    delaytime = 0.5;
+    lightstate = true;
+
+    ringsetting.yinfuID = -1;//-1代表哪个按钮都不选中
+    ringsetting.yinpinID = 8;//初始状态时的音频为到（1）
+    ringsetting.yinfuTime = 1.0;//默认时间为1s
 }

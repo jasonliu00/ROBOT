@@ -14,3 +14,10 @@ void MotorStopData::setData(MStopData data)
         motorChecked[i] = data.motorChecked[i];
     }
 }
+
+void RingData::setData(RingData data)
+{
+    yinfuTime = data.yinfuTime;
+    yinpinID = data.yinpinID;
+    yinfuID = data.yinfuID;
+}

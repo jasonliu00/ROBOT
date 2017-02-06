@@ -11,14 +11,19 @@ StartMotorDialog::StartMotorDialog(MStartData &data, QWidget *parent) :
     ui(new Ui::StartMotorDialog)
 {
     setData(data);
-    abletoclose = true;
+//    abletoclose = true;
     ui->setupUi(this);
+    this->setWindowTitle(tr("马达启动模块"));
+    this->setWindowFlags(Qt::Drawer);
 
     dialogInit();
     createConnection();
-    QString stylesheet("background-color:bisque;");
 
+    QString stylesheet("QDialog{background-color:bisque;}");
     setStyleSheet(stylesheet);
+
+    QString lineEditStyleSheet("QLineEdit{background-color:white;}");
+    setStyleSheet(lineEditStyleSheet);
 }
 
 StartMotorDialog::~StartMotorDialog()
@@ -40,12 +45,6 @@ void StartMotorDialog::dialogInit()
     ui->motor1CheckBox->setChecked(settingData.motorChecked[1]);
     ui->motor2CheckBox->setChecked(settingData.motorChecked[2]);
     ui->motor3CheckBox->setChecked(settingData.motorChecked[3]);
-
-    QString stylesheet_edit("background-color:white;");
-    ui->motor0LineEdit->setStyleSheet(stylesheet_edit);
-    ui->motor1LineEdit->setStyleSheet(stylesheet_edit);
-    ui->motor2LineEdit->setStyleSheet(stylesheet_edit);
-    ui->motor3LineEdit->setStyleSheet(stylesheet_edit);
 
     ui->motor0LineEdit->setText(QString::number(settingData.motorPower[0]));
     ui->motor1LineEdit->setText(QString::number(settingData.motorPower[1]));
@@ -196,13 +195,13 @@ void StartMotorDialog::okButtonClicked()
         if(!ok){
             QMessageBox::warning(this, tr("warning"), tr("请输入-100~100的整数"));
             edit->setFocus();
-            abletoclose = false;
+            //abletoclose = false;
             return;
         }
         if(value < -100 || value >100){
             QMessageBox::warning(this, tr("warning"), tr("请输入-100~100的整数"));
             edit->setFocus();
-            abletoclose = false;
+            //abletoclose = false;
             return;
         }
     }
@@ -219,18 +218,18 @@ void StartMotorDialog::okButtonClicked()
 
     accept();
 }
-
-void StartMotorDialog::closeEvent(QCloseEvent *event)
-{
-    if(abletoclose)
-        event->accept();
-    else{
-        event->ignore();
-        abletoclose = true;
-    }
-}
+/*******closeEvent并不能阻止对话框关闭*********/
+//void StartMotorDialog::closeEvent(QCloseEvent *event)
+//{
+//    if(abletoclose)
+//        event->accept();
+//    else{
+//        event->ignore();
+//        abletoclose = true;
+//    }
+//}
 
 void StartMotorDialog::cancleButtonClicked()
 {
-    accept();
+    reject();
 }
