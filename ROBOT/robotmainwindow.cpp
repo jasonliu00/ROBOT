@@ -2,6 +2,7 @@
 #include "ui_robotmainwindow.h"
 #include "graphicwidget.h"
 #include "motorstartdialog.h"
+#include <QSqlQuery>
 
 RobotMainWindow::RobotMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -67,6 +68,7 @@ void RobotMainWindow::createActions()
     compellAction = new QAction(QIcon(":/images/compell.png"), tr("(&C)编译"),this);
     compellAction->setShortcut(tr("Compell"));
     compellAction->setStatusTip(tr("编译当前程序"));
+    connect(compellAction, SIGNAL(triggered(bool)), this, SLOT(compellProgram()));
 
     downloadAction = new QAction(QIcon(":/images/download.png"), tr("(&D)下载"),this);
     downloadAction->setShortcut(tr("Download"));
@@ -112,4 +114,9 @@ void RobotMainWindow::showMotorDlg()
 {
     MotorStartDialog *dlg = new MotorStartDialog();
     dlg->show();
+}
+
+void RobotMainWindow::compellProgram()
+{
+//    QSqlQuery query;
 }

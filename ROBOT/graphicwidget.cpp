@@ -5,6 +5,7 @@
 #include "ui_graphicwidget.h"
 #include "mygraphicspolygonitem.h"
 #include "mygraphicitem.h"
+
 #include "arrow.h"
 #include "itemtypes.h"
 #include "startmotordialog.h"
@@ -55,6 +56,8 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
             this, SLOT(cgqItemInserted(MyCGQItem*)));
     connect(scene, SIGNAL(zxqItemInserted(MyZXQItem*)),
             this, SLOT(zxqItemInserted(MyZXQItem*)));
+    connect(scene, SIGNAL(kzqItemInserted(MyKZQItem*)),
+            this, SLOT(kzqItemInserted(MyKZQItem*)));
 }
 
 GraphicWidget::~GraphicWidget()
@@ -128,17 +131,28 @@ void GraphicWidget::createToolBox()
 
     QWidget *zxqWidget = new QWidget;
     zxqWidget->setLayout(zxqLayout);
-//    backgroundButtonGroup = new QButtonGroup;
-//    backgroundButtonGroup->setExclusive(true);
-//    connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),
-//            this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
 
+    kzqButtonGroup = new QButtonGroup;
+    kzqButtonGroup->setExclusive(true);
+    connect(kzqButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(kzqButtonGroupClicked(int)));
+
+    QGridLayout *kzqLayout = new QGridLayout;
+    kzqLayout->addWidget(createKZQCellWidget(tr("开始"), MyKZQItem::Begain,
+                                             ":/images/begain.PNG"), 0, 0);
+    kzqLayout->addWidget(createKZQCellWidget(tr("结束"), MyKZQItem::End,
+                                             ":/images/end.PNG"), 0, 1);
+    kzqLayout->addWidget(createKZQCellWidget(tr("条件判断"), MyKZQItem::Panduan,
+                                             ":/images/panduan.PNG"), 1, 0);
+    kzqLayout->setRowStretch(2, 10);
+    kzqLayout->setColumnStretch(2, 10);
+
+    QWidget *kzqWidget = new QWidget;
+    kzqWidget->setLayout(kzqLayout);
 
     toolBox = new QToolBox;
     toolBox->setMinimumWidth(cgqWidget->sizeHint().width());
     toolBox->addItem(cgqWidget, tr("传感器模块库"));
     toolBox->addItem(zxqWidget, tr("执行器模块库"));
-    QWidget *kzqWidget = new QWidget;
     toolBox->addItem(kzqWidget, tr("控制器模块库"));
 }
 
@@ -150,24 +164,6 @@ void GraphicWidget::createAction()
 //    propertyAction = new QAction(tr("属性设置"));
 //    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDialog()));
 }
-
-//void GraphicWidget::buttonGroupClicked(int id)
-//{
-//    QList<QAbstractButton *> buttons = buttonGroup->buttons();
-//    foreach(QAbstractButton *button, buttons){
-//        if(buttonGroup->button(id) != button)
-//            button->setChecked(false);
-//    }
-//    if(id == int(GraphicWidget::Ellipse))
-//        scene->setMode(MyGraphicsScene::InsertEllipseItem);
-//    else if(id == 10)
-//        scene->setMode(MyGraphicsScene::InsertMyGraphicsItem);
-//    else{
-//        scene->setMode(MyGraphicsScene::InsertPolygonItem);
-//        scene->setPolygonItemType(MyGraphicsPolygonItem::PolygonType(id));
-//        scene->setZXQType(MyZXQItem::ZXQType(id));
-//    }
-//}
 
 void GraphicWidget::cgqButtonGroupClicked(int id)
 {
@@ -191,6 +187,18 @@ void GraphicWidget::zxqButtonGroupClicked(int id)
 
     scene->setMode(MyGraphicsScene::InsertZXQItem);
     scene->setZXQType(MyZXQItem::ZXQType(id));
+}
+
+void GraphicWidget::kzqButtonGroupClicked(int id)
+{
+    QList<QAbstractButton*>buttons = kzqButtonGroup->buttons();
+    foreach(QAbstractButton *button, buttons){
+        if(kzqButtonGroup->button(id) != button)
+            button->setChecked(false);
+    }
+
+    scene->setMode(MyGraphicsScene::InsertKZQItem);
+    scene->setKZQType(MyKZQItem::KZQType(id));
 }
 
 //void GraphicWidget::backgroundButtonGroupClicked(QAbstractButton *button)
@@ -245,6 +253,12 @@ void GraphicWidget::zxqItemInserted(MyZXQItem *item)
     zxqButtonGroup->button(static_cast<int>(item->zxqType()))->setChecked(false);
     scene->setMode(MyGraphicsScene::MoveItem);
 
+}
+
+void GraphicWidget::kzqItemInserted(MyKZQItem *item)
+{
+    kzqButtonGroup->button(static_cast<int>(item->kzqType()))->setChecked(false);
+    scene->setMode(MyGraphicsScene::MoveItem);
 }
 
 void GraphicWidget::deleteItem()
@@ -343,6 +357,24 @@ QWidget *GraphicWidget::createZXQCellWidget(const QString &text, MyZXQItem::ZXQT
     layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
 
     QWidget *widget =  new QWidget;
+    widget->setLayout(layout);
+
+    return widget;
+}
+
+QWidget *GraphicWidget::createKZQCellWidget(const QString &text, MyKZQItem::KZQType kzqType, const QString &image)
+{
+    QToolButton *button = new QToolButton;
+    button->setCheckable(true);
+    button->setIcon(QIcon(image));
+    button->setIconSize(QSize(50, 50));
+    kzqButtonGroup->addButton(button, (int)kzqType);
+
+    QGridLayout *layout = new QGridLayout;
+    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
+    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
+
+    QWidget *widget = new QWidget;
     widget->setLayout(layout);
 
     return widget;

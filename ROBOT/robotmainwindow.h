@@ -51,6 +51,7 @@ private:
 
 private slots:
     void showMotorDlg();
+    void compellProgram();
 
 
 //    MyGraphicsScene *scene;

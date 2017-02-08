@@ -183,6 +183,7 @@ void MyZXQItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void MyZXQItem::showPropertyDlg()
 {
 //    qDebug()<< "myZXQType in showPropertyDlg() is " << myZXQType;
+    QSqlQuery query;
     switch(myZXQType){
         case MotorStart:{
             StartMotorDialog dlg(MStart_Setting);
@@ -204,18 +205,17 @@ void MyZXQItem::showPropertyDlg()
                 }
                 if(MStart_Setting.motorChecked[2]){
                     strtoshow += "1";
-                    strtocontent += ("RUN(1," +
+                    strtocontent += ("RUN(2," +
                                      QString().number((MStart_Setting.motorPower[2])) +
                                      ")");
                 }
                 if(MStart_Setting.motorChecked[3]){
                     strtoshow += "1";
-                    strtocontent += ("RUN(1," +
+                    strtocontent += ("RUN(3," +
                                      QString().number((MStart_Setting.motorPower[3])) +
                                      ")");
                 }
                 /**********************/
-                QSqlQuery query;
                 query.prepare("UPDATE property "
                               "SET content = :content "
                               "WHERE name = :name;");
@@ -255,7 +255,6 @@ void MyZXQItem::showPropertyDlg()
                     strtoshow += "3";
                 }
                 /**********更新属性表的content字段*********/
-                QSqlQuery query;
                 query.prepare("UPDATE property "
                               "SET content = :content "
                               "WHERE name = :modelname;");
@@ -268,14 +267,24 @@ void MyZXQItem::showPropertyDlg()
                 if(strtoshow == "0123")
                     strtoshow = "全";
                 myZXQName = "马达" + strtoshow + "停";
-                update();
+                update();  //更新模块表面显示
             }
         break;
         }
         case Show:{
-            ShowDialog dlg;
+            ShowDialog dlg(showstring);
             if(dlg.exec()){
-
+            showstring = dlg.data();
+            QString strcontent = QString("SHOW(%1);").arg(showstring);
+            query.prepare("UPDATE property "            //注意空格是不可省略的
+                          "SET content = :content "
+                          "WHERE name = :modelname;");
+            query.addBindValue(strcontent);
+            query.addBindValue(this->getName());
+            if(!query.exec()){
+                qDebug() << "UPDATE showdialog content query failed!\n"
+                         << query.lastError().text();
+            }
             }
         break;
         }
@@ -283,6 +292,20 @@ void MyZXQItem::showPropertyDlg()
             LightDialog dlg(lightstate);
             if(dlg.exec()){
                 lightstate = dlg.data();
+                QString strcontent;
+                if(lightstate)
+                    strcontent = "LIGHT(1);";
+                else
+                    strcontent = "LIGHT(0);";
+                query.prepare("UPDATE property "
+                              "SET content = :content "
+                              "WHERE name = :modelname;");
+                query.addBindValue(strcontent);
+                query.addBindValue(this->getName());
+                if(!query.exec()){
+                    qDebug() << "UPDATE lightdialog content query failed!\n"
+                             << query.lastError().text();
+                }
             }
         break;
         }
@@ -290,6 +313,18 @@ void MyZXQItem::showPropertyDlg()
             RingDialog dlg(ringsetting);
             if(dlg.exec()){
                 ringsetting = dlg.data();
+                QString strcontent = QString("RING(%1, %2);")
+                        .arg(ringsetting.yinfuTime, 0, 'f', 4)   //4代表精度，即小数点之后4位保留
+                        .arg(yinpin[ringsetting.yinpinID], 0, 'f', 1);
+                query.prepare("UPDATE property "
+                              "SET content = :content "
+                              "WHERE name = :modelname;");
+                query.addBindValue(strcontent);
+                query.addBindValue(this->getName());
+                if(!query.exec()){
+                    qDebug() << "UPDATE ringdialog content query failed!\n"
+                             << query.lastError().text();
+                }
             }
         break;
         }
@@ -297,6 +332,15 @@ void MyZXQItem::showPropertyDlg()
             DelayDialog dlg(delaytime);
             if(dlg.exec()){
                 delaytime = dlg.data();
+                QString strcontent = QString("DELAY(%1);").arg(delaytime);
+                query.prepare("UPDATE property SET content = :content "
+                              "WHERE name = :modelname;");
+                query.addBindValue(strcontent);
+                query.addBindValue(this->getName());
+                if(!query.exec()){
+                    qDebug() << "UPDATE delaydialog content query failed!\n"
+                             << query.lastError().text();
+                }
             }
         break;
         }
@@ -347,7 +391,7 @@ void MyZXQItem::createContextMenu()
     contextmenu->addAction(deleteAction);
     contextmenu->addAction(propertyAction);
 }
-
+/******属性对话框中数据的初始化*******/
 void MyZXQItem::propertySettingInit()
 {
     for(int i = 0; i < MStart_Setting.num; i++){
@@ -363,4 +407,6 @@ void MyZXQItem::propertySettingInit()
     ringsetting.yinfuID = -1;//-1代表哪个按钮都不选中
     ringsetting.yinpinID = 8;//初始状态时的音频为到（1）
     ringsetting.yinfuTime = 1.0;//默认时间为1s
+
+    showstring = "\\n\\n\\n\\n\\n\\n";
 }

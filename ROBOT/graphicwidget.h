@@ -4,10 +4,12 @@
 #include <QWidget>
 #include "mycgqitem.h"
 #include "myzxqitem.h"
+#include "mykzqitem.h"
 
 class MyGraphicsScene;
 class MyZXQItem;
 class MyCGQItem;
+class MyKZQItem;
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -44,7 +46,8 @@ private:
 
 //    QWidget *createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType, const QString &image);
     QWidget *createCGQCellWidget(const QString &text, MyCGQItem::CGQType cgqType, const QString &image);
-    QWidget *createZXQCellWidget(const QString &text, MyZXQItem::ZXQType zxqType, const QString &image);
+    QWidget *createZXQCellWidget(const QString &text, MyZXQItem::ZXQType zxqType, const QString &image);\
+    QWidget *createKZQCellWidget(const QString &text, MyKZQItem::KZQType kzqType, const QString &image);
 //    QWidget *createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType);
 //    QWidget *createEllipseCellWidget(const QString &text, InsertItemType itemType);
 //    QWidget *createBackgroundCellWidget(const QString &text, const QString &image);
@@ -54,6 +57,7 @@ private:
     QGraphicsView *view;
     QButtonGroup *cgqButtonGroup;
     QButtonGroup *zxqButtonGroup;
+    QButtonGroup *kzqButtonGroup;
 //    QButtonGroup *backgroundButtonGroup;
 
     InsertItemType myItemType;
@@ -67,12 +71,14 @@ private slots:
 //    void buttonGroupClicked(int id);
     void cgqButtonGroupClicked(int id);
     void zxqButtonGroupClicked(int id);
+    void kzqButtonGroupClicked(int id);
 //    void backgroundButtonGroupClicked(QAbstractButton *button);
 //    void polygonItemInserted(MyGraphicsPolygonItem *item);
 //    void ellipseItemInserted(MyGraphicsEllipseItem *item);
 //    void myItemInserted(MyGraphicsItem *item);
     void cgqItemInserted(MyCGQItem *item);
     void zxqItemInserted(MyZXQItem *item);
+    void kzqItemInserted(MyKZQItem *item);
     void deleteItem();
     void showPropertyDialog();
 };

@@ -24,7 +24,7 @@ public:
     void removeArrow(Arrow *arrow);
     void removeArrows();
     void addArrow(Arrow *arrow);
-    QString getName() const{return myname;}
+    QString getName() const{return myname;}  //用于获得模块在数据库中的唯一名字
     void setName(QString &str){myname = str;}
 
     MStartData data(){return MStart_Setting;}
@@ -54,10 +54,10 @@ private:
     ZXQType myZXQType;
     QString myZXQName;
     bool isHover;
-
+/***出口入口的区域****/
     QRectF inArea;
     QRectF outArea;
-
+/***出口入口点的坐标****/
     QPointF inPoint;
     QPointF outPoint;
 
@@ -66,12 +66,14 @@ private:
     QMenu *contextmenu;
     QAction *propertyAction;
     QAction *deleteAction;
+/****属性对话框中用到的数据****/
+    MStartData MStart_Setting;   //马达启动对话框数据
+    MStopData MStop_Setting;     //马达停止对话框数据
+    RingData ringsetting;        //蜂鸣器对话框数据
+    double delaytime;            //延时对话框数据
+    bool lightstate;             //指示灯数据
+    QString showstring;          //显示对话框数据
 
-    MStartData MStart_Setting;
-    MStopData MStop_Setting;
-    RingData ringsetting;
-    double delaytime;
-    bool lightstate;
     void drawInArc(QPainter *painter);
     void drawOutArc(QPainter *painter);
     void createContextMenu();

@@ -33,6 +33,8 @@ private slots:
     void cancelButtonClicked();
     void yinpinBGClicked(int Id);
     void yinfuBGClicked(int Id);
+    void timeTextChanged(QString str);
+    void yinpinTextChanged(QString str);
 };
 
 #endif // RINGDIALOG_H

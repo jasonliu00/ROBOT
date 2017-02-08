@@ -23,7 +23,7 @@ QPixmap MyCGQItem::image() const
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
     painter.setPen(QPen(Qt::black, 1));
-    painter.setBrush(QColor::fromRgb(QRgb(0xffcc00)));
+    painter.setBrush(QColor::fromRgb(QRgb(0xff6600)));
     painter.translate(125, 125);
     painter.drawPolygon(myPolygon);
 
@@ -44,7 +44,7 @@ void MyCGQItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QFont font("宋体",12);
     painter->setFont(font);
     painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(Qt::yellow);
+    painter->setBrush(QColor::fromRgb(QRgb(0xff6600)));
     painter->drawPolygon(myPolygon);
     QRect rect(-40, -18, 80, 36);
     painter->drawText(rect, Qt::AlignCenter, myCGQName);

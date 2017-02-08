@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     lightdialog.cpp \
     ringdialog.cpp \
     showdialog.cpp \
-    delaydialog.cpp
+    delaydialog.cpp \
+    mykzqitem.cpp \
+    modelgraphicsitem.cpp
 
 HEADERS  += robotmainwindow.h \
     mygraphicitem.h \
@@ -49,7 +51,9 @@ HEADERS  += robotmainwindow.h \
     lightdialog.h \
     ringdialog.h \
     showdialog.h \
-    delaydialog.h
+    delaydialog.h \
+    mykzqitem.h \
+    modelgraphicsitem.h
 
 FORMS    += robotmainwindow.ui \
     graphicwidget.ui \

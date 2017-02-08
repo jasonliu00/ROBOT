@@ -33,7 +33,7 @@ void DelayDialog::dialogInit()
     ui->pictureLabel->resize(pixmap.size());
     ui->pictureLabel->setPixmap(pixmap);
 
-    ui->lineEdit->setText(QString("%1").arg(delaytime, 0, 'f'));
+    ui->lineEdit->setText(QString("%1").arg(delaytime, 0, 'f', 3));
 }
 
 void DelayDialog::createConnection()

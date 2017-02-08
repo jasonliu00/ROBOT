@@ -4,7 +4,7 @@ typedef struct MotorStartData MStartData;
 typedef struct MotorStopData MStopData;
 typedef struct RingData RingData;
 
-const float yinpin[22] = {0, 1047.0, 1175.0, 1319.0, 1397.0, 1568.0, 1760.0, 1975.0,
+const float yinpin[22] = {0.0, 1047.0, 1175.0, 1319.0, 1397.0, 1568.0, 1760.0, 1975.0,
                     523.2, 587.3, 659.2, 698.4, 783.9, 880.0, 987.7,
                     261.6, 293.6, 329.6, 349.2, 391.9, 440.0, 493.8};
 const float yinfu[4] = {0.5, 0.25, 0.125, 0.0625};

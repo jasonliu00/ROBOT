@@ -81,6 +81,8 @@ void RingDialog::createConnection()
     connect(ui->cancelButton, SIGNAL(clicked(bool)), this, SLOT(cancelButtonClicked()));
     connect(yinpinButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(yinpinBGClicked(int)));
     connect(yinfuButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(yinfuBGClicked(int)));
+    connect(ui->timeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(timeTextChanged(QString)));
+    connect(ui->yinpinLineEdit, SIGNAL(textChanged(QString)), this, SLOT(yinpinTextChanged(QString)));
 }
 
 void RingDialog::okButtonClicked()
@@ -88,8 +90,10 @@ void RingDialog::okButtonClicked()
    bool ok;
    float time;
    int ID = yinfuButtonGroup->checkedId();
-   if(ID >= 0)
+   if(ID >= 0){
        ringsetting.yinfuTime = yinfu[ID];
+       ringsetting.yinfuID = ID;
+   }
    else{
        time = ui->timeLineEdit->text().toFloat(&ok);
        if(!ok){
@@ -119,4 +123,38 @@ void RingDialog::yinpinBGClicked(int Id)
 void RingDialog::yinfuBGClicked(int Id)
 {
     ui->timeLineEdit->setText(QString::number(yinfu[Id], 'f', 4));
+}
+
+void RingDialog::timeTextChanged(QString str)
+{
+    bool ok;
+    float time = str.toFloat(&ok);
+    if(ok){
+       if(time == 0.5)
+            ui->radioButton_21->setChecked(true);
+       if(time == 0.25)
+            ui->radioButton_41->setChecked(true);
+       if(time == 0.125)
+            ui->radioButton_81->setChecked(true);
+       if(time == 0.0625)
+            ui->radioButton_161->setChecked(true);
+    }
+}
+
+void RingDialog::yinpinTextChanged(QString str)
+{
+    bool ok;
+    bool flag = false;
+    int i;
+    float yp = str.toFloat(&ok);
+    if(ok){
+        for(i = 0; i < 22; i++){
+            if(yp == yinpin[i]){
+                flag = true;
+                break;
+            }
+        }
+        if(flag)
+            yinpinButtonGroup->button(i)->setChecked(true);
+    }
 }

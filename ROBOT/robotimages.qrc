@@ -31,5 +31,8 @@
         <file>images/lightdlg.PNG</file>
         <file>images/ringdlg.PNG</file>
         <file>images/showdlg.PNG</file>
+        <file>images/begain.PNG</file>
+        <file>images/end.PNG</file>
+        <file>images/panduan.PNG</file>
     </qresource>
 </RCC>

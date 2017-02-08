@@ -87,6 +87,13 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             /*******************************************************/
             emit zxqItemInserted(zxqItem);}
         break;
+        case InsertKZQItem:{
+            kzqItem = new MyKZQItem(myItemMenu, kzqtype);
+            addItem(kzqItem);
+            kzqItem->setPos(mouseEvent->scenePos());
+            emit kzqItemInserted(kzqItem);
+        }
+        break;
         case InsertLine:
             line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
                                         mouseEvent->scenePos()));
@@ -139,11 +146,11 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         delete line;
 
         if (startItems.count() > 0 && endItems.count() > 0 &&
-            startItems.first()->type() == MyZXQItem::Type &&
-            endItems.first()->type() == MyZXQItem::Type &&
+            (startItems.first()->type() == MyZXQItem::Type) &&
+            (endItems.first()->type() == MyZXQItem::Type) &&
             startItems.first() != endItems.first()) {
-            MyZXQItem *startItem = qgraphicsitem_cast<MyZXQItem *>(startItems.first());
-            MyZXQItem *endItem = qgraphicsitem_cast<MyZXQItem *>(endItems.first());
+            MyZXQItem *startItem = qgraphicsitem_cast<MyZXQItem*>(startItems.first());
+            MyZXQItem *endItem = qgraphicsitem_cast<MyZXQItem*>(endItems.first());
             Arrow *arrow = new Arrow(startItem, endItem);
             arrow->setColor(Qt::black);
             startItem->addArrow(arrow);
@@ -190,3 +197,4 @@ void MyGraphicsScene::setPolygonItemType(MyGraphicsPolygonItem::PolygonType type
 //                      Qt::SquareCap, Qt::MiterJoin));
 //    addItem(line);
 //}
+
