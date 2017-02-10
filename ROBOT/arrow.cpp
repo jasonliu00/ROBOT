@@ -12,9 +12,12 @@
 const qreal Pi = 3.14;
 
 //! [0]
-Arrow::Arrow(MyZXQItem *startItem, MyZXQItem *endItem, QGraphicsItem *parent)
+Arrow::Arrow(ModelGraphicsItem *startItem, ModelGraphicsItem *endItem,
+             QPointF startPoint, QPointF endPoint, QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
 {
+    lineStartPoint = startPoint;
+    lineEndPoint = endPoint;
     myStartItem = startItem;
     myEndItem = endItem;
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -68,8 +71,8 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     qreal arrowSize = 8;
     painter->setPen(myPen);
     painter->setBrush(myColor);
-    QPointF startPoint = myStartItem->outPosToScene();
-    QPointF endPoint = myEndItem->inPosToScene();
+    QPointF startPoint = myStartItem->startPointToPaintArrow(lineStartPoint);
+    QPointF endPoint = myEndItem->endPointToPaintArrow(lineEndPoint);
 //    qDebug() << "startPoint and endPoint are " << startPoint << endPoint;
     qreal endX = endPoint.x();
     qreal startX = startPoint.x();

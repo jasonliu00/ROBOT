@@ -46,7 +46,7 @@ void DelayDialog::okButtonClicked()
 {
     QString str = ui->lineEdit->text();
     bool ok;
-    double time = str.toInt(&ok);
+    double time = str.toDouble(&ok);
     if(!ok){
         QMessageBox::warning(this, tr("delayDialog"), tr("请输入数字"));
         return;

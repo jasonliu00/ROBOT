@@ -45,7 +45,7 @@ void StopMotorDialog::createConnection()
 
 void StopMotorDialog::checkBoxClicked()
 {
-    QCheckBox *checkBox = qobject_cast<QCheckBox*>(sender());
+//    QCheckBox *checkBox = qobject_cast<QCheckBox*>(sender());
 //    if(checkBox == ui->motor0CheckBox);
 //        motorStop[0] = checkBox->isChecked();
 //    if(checkBox == ui->motor1CheckBox);

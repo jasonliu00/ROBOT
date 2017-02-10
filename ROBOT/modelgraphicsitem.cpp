@@ -42,6 +42,5 @@ QVariant ModelGraphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change,
             arrow->updatePosition();
         }
     }
-
     return value;
 }

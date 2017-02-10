@@ -1,6 +1,6 @@
 #ifndef MYZXQITEM_H
 #define MYZXQITEM_H
-#include <QGraphicsPolygonItem>
+#include "modelgraphicsitem.h"
 #include "itemtypes.h"
 #include "modelpropertydata.h"
 #include "modelpropertydata.h"
@@ -8,7 +8,7 @@
 class Arrow;
 class QAction;
 
-class MyZXQItem : public QObject, public QGraphicsPolygonItem
+class MyZXQItem : public ModelGraphicsItem
 {
     Q_OBJECT
 public:
@@ -21,20 +21,20 @@ public:
     ZXQType zxqType() const{return myZXQType;}
     bool hoverState() const{return isHover;}
 
-    void removeArrow(Arrow *arrow);
-    void removeArrows();
-    void addArrow(Arrow *arrow);
+    QPointF startPointToPaintArrow(QPointF &point);
+    QPointF endPointToPaintArrow(QPointF &point);
+//    void removeArrow(Arrow *arrow);
+//    void removeArrows();
+//    void addArrow(Arrow *arrow);
     QString getName() const{return myname;}  //用于获得模块在数据库中的唯一名字
     void setName(QString &str){myname = str;}
 
     MStartData data(){return MStart_Setting;}
 //    void setData(MStartData data);
 
-    QPointF inPosToScene() const;
-    QPointF outPosToScene() const;
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
+//    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -58,8 +58,8 @@ private:
     QRectF inArea;
     QRectF outArea;
 /***出口入口点的坐标****/
-    QPointF inPoint;
-    QPointF outPoint;
+    QPointF endPoint;
+    QPointF startPoint;
 
     QList<Arrow *> arrows;
 

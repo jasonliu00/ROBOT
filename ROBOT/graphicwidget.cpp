@@ -133,7 +133,7 @@ void GraphicWidget::createToolBox()
     zxqWidget->setLayout(zxqLayout);
 
     kzqButtonGroup = new QButtonGroup;
-    kzqButtonGroup->setExclusive(true);
+    kzqButtonGroup->setExclusive(false);  //true状态下只能有一个Button被选中，并且取消当前选中项必须通过选中其他项，否则不能取消当前的选中状态
     connect(kzqButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(kzqButtonGroupClicked(int)));
 
     QGridLayout *kzqLayout = new QGridLayout;
@@ -223,25 +223,6 @@ void GraphicWidget::kzqButtonGroupClicked(int id)
 //    view->update();
 //}
 
-//void GraphicWidget::polygonItemInserted(MyGraphicsPolygonItem *item)
-//{
-//    buttonGroup->button(int(item->polygonType()) + int(GraphicWidget::Polygon))->setChecked(false);
-//    scene->setMode(MyGraphicsScene::MoveItem);
-//}
-
-//void GraphicWidget::ellipseItemInserted(MyGraphicsEllipseItem *item)
-//{
-//    buttonGroup->button(int(MyGraphicsScene::InsertEllipseItem))->setChecked(false);
-//    scene->setMode(MyGraphicsScene::MoveItem);
-//}
-
-//void GraphicWidget::myItemInserted(MyGraphicsItem *item)
-//{
-//    if(buttonGroup->checkedId() == 10)
-//        buttonGroup->checkedButton()->setChecked(false);
-//    scene->setMode(MyGraphicsScene::MoveItem);
-//}
-
 void GraphicWidget::cgqItemInserted(MyCGQItem *item)
 {
     cgqButtonGroup->button(static_cast<int>(item->cgqType()))->setChecked(false);
@@ -276,6 +257,15 @@ void GraphicWidget::deleteItem()
     foreach (QGraphicsItem *item, scene->selectedItems()) {
          if (item->type() == MyZXQItem::Type)
              qgraphicsitem_cast<MyZXQItem *>(item)->removeArrows();
+         else if(item->type() == MyKZQItem::Type){
+             MyKZQItem *tmp = qgraphicsitem_cast<MyKZQItem *>(item);
+             tmp->removeArrows();
+             MyKZQItem::KZQType t = tmp->kzqType();
+             if(t == MyKZQItem::Begain)
+                 scene->setBegainModelState(false);
+             else if(t == MyKZQItem::End)
+                 scene->setEndModelState(false);
+         }
          scene->removeItem(item);
          delete item;
     }
@@ -302,27 +292,6 @@ void GraphicWidget::showPropertyDialog()
         }
     }*/
 }
-
-//QWidget *GraphicWidget::createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType, const QString &image)
-//{
-////    MyGraphicsPolygonItem item(itemMenu, itemType);
-
-//    QToolButton *button = new QToolButton;
-//    button->setCheckable(true);
-
-//    button->setIcon(QIcon(image));
-//    button->setIconSize(QSize(50, 50));
-//    buttonGroup->addButton(button, int(itemType) + int(Polygon));
-
-//    QGridLayout *layout = new QGridLayout;
-//    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
-//    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
-
-//    QWidget *widget =  new QWidget;
-//    widget->setLayout(layout);
-
-//    return widget;
-//}
 
 QWidget *GraphicWidget::createCGQCellWidget(const QString &text, MyCGQItem::CGQType cgqType, const QString &image)
 {

@@ -6,8 +6,11 @@
 #include <QPainterPath>
 #include <QtWidgets>
 MyKZQItem::MyKZQItem(QMenu *menu, KZQType kzqtype, QGraphicsItem *parent)
-    :QObject(), QGraphicsPathItem(parent)
+    :ModelGraphicsItem(parent)
 {
+
+    leftStartArea = QRectF(40, -5, 17, 10);
+    downStartArea = QRectF(20, -7, 17, 14);
     myKZQType = kzqtype;
     myKZQName = KZQModelName[(int)kzqtype];
     myContextMenu = menu;
@@ -42,46 +45,34 @@ MyKZQItem::MyKZQItem(QMenu *menu, KZQType kzqtype, QGraphicsItem *parent)
         myPath.arcTo(-50, -20, 40, 40, 270, -180);
         break;
     }
-    setPath(myPath);
-    setFlag(QGraphicsItem::ItemIsMovable, true);
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-    setFlag(QGraphicsItem::ItemIsFocusable, true);
+//    setFlag(QGraphicsItem::ItemIsMovable, true);
+//    setFlag(QGraphicsItem::ItemIsSelectable, true);
+//    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+//    setFlag(QGraphicsItem::ItemIsFocusable, true);
 
-    setAcceptHoverEvents(true); //想要接受鼠标hover的事件必须设置此句
+//    setAcceptHoverEvents(true); //想要接受鼠标hover的事件必须设置此句
 }
 
-void MyKZQItem::removeArrow(Arrow *arrow)
+QPointF MyKZQItem::startPointToPaintArrow(QPointF &point)
 {
-    int index = arrows.indexOf(arrow);
-
-    if (index != -1)
-        arrows.removeAt(index);
-}
-
-void MyKZQItem::removeArrows()
-{
-    foreach (Arrow *arrow, arrows) {
-        arrow->startItem()->removeArrow(arrow);
-        arrow->endItem()->removeArrow(arrow);
-        scene()->removeItem(arrow);
-        delete arrow;
+    if(myKZQType == Begain){
+        return mapToScene(QPointF(0, 20));
     }
+    if(myKZQType == Panduan){
+        QPointF tempp = mapToItem(this, point);
+        if(leftStartArea.contains(tempp))
+            return mapToScene(QPointF(50, 0));
+        if(downStartArea.contains(tempp))
+            return mapToScene(QPointF(0, 30));
+    }
+    qDebug() << "Error happend. point is not within avaliable area.";
+    return QPointF(0, 0);
 }
 
-void MyKZQItem::addArrow(Arrow *arrow)
+QPointF MyKZQItem::endPointToPaintArrow(QPointF &point)
 {
-    arrows.append(arrow);
-}
-
-QPointF MyKZQItem::inPosToScene() const
-{
-    return mapToScene(inPoint);
-}
-
-QPointF MyKZQItem::outPosToScene() const
-{
-    return mapToScene(outPoint);
+    Q_UNUSED(point);
+    return mapToScene(endPoints[int(myKZQType)]);
 }
 
 void MyKZQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -91,16 +82,16 @@ void MyKZQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     contextmenu->exec(event->screenPos());
 }
 
-QVariant MyKZQItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
-{
-    if (change == QGraphicsItem::ItemPositionChange) {
-        foreach (Arrow *arrow, arrows) {
-            arrow->updatePosition();
-        }
-    }
+//QVariant MyKZQItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+//{
+//    if (change == QGraphicsItem::ItemPositionChange) {
+//        foreach (Arrow *arrow, arrows) {
+//            arrow->updatePosition();
+//        }
+//    }
 
-    return value;
-}
+//    return value;
+//}
 
 void MyKZQItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
@@ -157,6 +148,10 @@ QPainterPath MyKZQItem::shape() const
 
 void MyKZQItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
+    setCursor(Qt::ArrowCursor);
+    isHover = false;
+    if(((MyGraphicsScene*)scene())->mode() != MyGraphicsScene::MoveItem)
+        ((MyGraphicsScene*)scene())->setMode(MyGraphicsScene::MoveItem);
     switch(myKZQType){
     case Begain:
         if(outArea.contains(event->pos())){
@@ -187,11 +182,7 @@ void MyKZQItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
         break;
     default:
-        setCursor(Qt::ArrowCursor);
-        isHover = false;
-        if(((MyGraphicsScene*)scene())->mode() != MyGraphicsScene::MoveItem)
-            ((MyGraphicsScene*)scene())->setMode(MyGraphicsScene::MoveItem);
-        break;
+        ;
     }
 }
 

@@ -14,7 +14,7 @@ class MyGraphicsScene : public QGraphicsScene
     Q_OBJECT
 public:
     enum Mode{InsertZXQItem, InsertCGQItem, InsertKZQItem, InsertLine, InsertPolygonItem, InsertEllipseItem, InsertMyGraphicsItem, MoveItem};
-
+    MyGraphicsScene(QMenu *menu, QObject *parent);
     void setMode(Mode mode);
     Mode mode() const{return myMode;}
     void setPolygonItemType(MyGraphicsPolygonItem::PolygonType type);
@@ -22,8 +22,10 @@ public:
     void setCGQType(MyCGQItem::CGQType type){cgqtype = type;}
     void setKZQType(MyKZQItem::KZQType type){kzqtype = type;}
     void setInsertLine(){insertLine = true;}
-
-    MyGraphicsScene(QMenu *menu, QObject *parent);
+    void setBegainModelState(bool state){begainModelExist = state;}
+    void setEndModelState(bool state){endModelExist = state;}
+    bool isBegainModelExist() const{return begainModelExist;}
+    bool isEndModelExist() const{return endModelExist;}
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
@@ -45,6 +47,12 @@ private:
 
     bool insertLine;
     bool mouseDown;
+
+    QPointF mousePressPos;
+    QPointF mouseReleasePos;
+
+    bool begainModelExist; //表征开始、结束模块是否已经唯一存在
+    bool endModelExist;
 signals:
     void polygonItemInserted(MyGraphicsPolygonItem *item);
     void ellipseItemInserted(MyGraphicsEllipseItem *item);

@@ -1,7 +1,6 @@
 #include "myzxqitem.h"
 #include <QtWidgets>
 #include "mygraphicsscene.h"
-#include "arrow.h"
 #include "startmotordialog.h"
 #include "stopmotordialog.h"
 #include "lightdialog.h"
@@ -14,7 +13,7 @@
 #include <QDebug>
 
 MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *parent)
-    :QObject(), QGraphicsPolygonItem(parent)
+    :ModelGraphicsItem(parent)
     ,myZXQType(zxqtype)
     ,isHover(false)
 {
@@ -22,8 +21,8 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
     inArea = QRectF(-6, -27, 12, 7);
     outArea = QRectF(-6, 20, 12, 7);
 
-    inPoint = QPointF(0, -20);
-    outPoint = QPointF(0, 20);
+    endPoint = QPointF(0, -20);
+    startPoint = QPointF(0, 20);
     myZXQName = ZXQName[(int)myZXQType];
     myContextMenu = menu;
     myPolygon << QPointF(-50.0, -20.0) << QPointF(50.0, -20.0)
@@ -31,13 +30,13 @@ MyZXQItem::MyZXQItem(QMenu *menu, MyZXQItem::ZXQType zxqtype, QGraphicsItem *par
 
     createContextMenu();
 
-    setPolygon(myPolygon);
-    setFlag(QGraphicsItem::ItemIsMovable, true);
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
-    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-    setFlag(QGraphicsItem::ItemIsFocusable, true);
+//    setPolygon(myPolygon);
+//    setFlag(QGraphicsItem::ItemIsMovable, true);
+//    setFlag(QGraphicsItem::ItemIsSelectable, true);
+//    setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+//    setFlag(QGraphicsItem::ItemIsFocusable, true);
 
-    setAcceptHoverEvents(true); //想要接受鼠标hover的事件必须设置此句
+//    setAcceptHoverEvents(true); //想要接受鼠标hover的事件必须设置此句
 }
 
 QPixmap MyZXQItem::image() const
@@ -53,49 +52,16 @@ QPixmap MyZXQItem::image() const
     return pixmap;
 }
 
-void MyZXQItem::removeArrow(Arrow *arrow)
+QPointF MyZXQItem::endPointToPaintArrow(QPointF &point)
 {
-    int index = arrows.indexOf(arrow);
-
-    if (index != -1)
-        arrows.removeAt(index);
+    Q_UNUSED(point);
+    return mapToScene(endPoint);
 }
 
-void MyZXQItem::removeArrows()
+QPointF MyZXQItem::startPointToPaintArrow(QPointF &point)
 {
-    foreach (Arrow *arrow, arrows) {
-        arrow->startItem()->removeArrow(arrow);
-        arrow->endItem()->removeArrow(arrow);
-        scene()->removeItem(arrow);
-        delete arrow;
-    }
-}
-
-void MyZXQItem::addArrow(Arrow *arrow)
-{
-    arrows.append(arrow);
-}
-
-
-QPointF MyZXQItem::inPosToScene() const
-{
-    return mapToScene(inPoint);
-}
-
-QPointF MyZXQItem::outPosToScene() const
-{
-    return mapToScene(outPoint);
-}
-
-QVariant MyZXQItem::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == QGraphicsItem::ItemPositionChange) {
-        foreach (Arrow *arrow, arrows) {
-            arrow->updatePosition();
-        }
-    }
-
-    return value;
+    Q_UNUSED(point);
+    return mapToScene(startPoint);
 }
 
 void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

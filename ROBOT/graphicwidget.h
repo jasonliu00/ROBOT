@@ -58,17 +58,13 @@ private:
     QButtonGroup *cgqButtonGroup;
     QButtonGroup *zxqButtonGroup;
     QButtonGroup *kzqButtonGroup;
-//    QButtonGroup *backgroundButtonGroup;
 
     InsertItemType myItemType;
 
     QAction *deleteAction;
     QAction *propertyAction;
     QMenu *itemMenu;
-
-
 private slots:
-//    void buttonGroupClicked(int id);
     void cgqButtonGroupClicked(int id);
     void zxqButtonGroupClicked(int id);
     void kzqButtonGroupClicked(int id);

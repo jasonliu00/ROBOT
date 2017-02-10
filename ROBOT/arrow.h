@@ -4,6 +4,7 @@
 #include "myzxqitem.h"
 #include "itemtypes.h"
 #include <QGraphicsLineItem>
+#include "modelgraphicsitem.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -22,18 +23,20 @@ class Arrow : public QGraphicsLineItem
 public:
     enum { Type = ArrowItemType};
 
-    Arrow(MyZXQItem *startItem, MyZXQItem *endItem,
-      QGraphicsItem *parent = 0);
+    Arrow(ModelGraphicsItem *startItem, ModelGraphicsItem *endItem,
+          QPointF startPoint, QPointF endPoint, QGraphicsItem *parent = 0);
 
     int type() const Q_DECL_OVERRIDE { return Type; }
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     QPainterPath shape() const Q_DECL_OVERRIDE;
     void setColor(const QColor &color) { myColor = color; }
-    MyZXQItem *startItem() const { return myStartItem; }
-    MyZXQItem *endItem() const { return myEndItem; }
+    ModelGraphicsItem *startItem() const { return myStartItem; }
+    ModelGraphicsItem *endItem() const { return myEndItem; }
 
     QPolygonF polyline() const{return myPolyline;}
     void setPolyline(QPolygonF polyline){myPolyline = polyline;}
+    void setLineStartPoint(QPointF p){lineStartPoint = p;}
+    void setLineEndPoint(QPointF p){lineEndPoint = p;}
 
     void updatePosition();
 
@@ -41,8 +44,10 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) Q_DECL_OVERRIDE;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 private:
-    MyZXQItem *myStartItem;
-    MyZXQItem *myEndItem;
+    ModelGraphicsItem *myStartItem;
+    ModelGraphicsItem *myEndItem;
+    QPointF lineStartPoint;
+    QPointF lineEndPoint;
     QColor myColor;
     QPolygonF arrowHead;
     QPolygonF myPolyline;

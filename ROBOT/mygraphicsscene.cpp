@@ -12,6 +12,8 @@
 MyGraphicsScene::MyGraphicsScene(QMenu *menu, QObject *parent)
     :QGraphicsScene(parent)
 {
+    begainModelExist = false;
+    endModelExist = false;
     mouseDown = false;
     insertLine = false;
     line = nullptr;
@@ -88,8 +90,20 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             emit zxqItemInserted(zxqItem);}
         break;
         case InsertKZQItem:{
+            if(kzqtype == MyKZQItem::Begain && this->isBegainModelExist()){
+                QMessageBox::warning(nullptr, tr("warning"), tr("开始和结束模块都只允许存在一个！！！"));
+                break;
+            }
+            if(kzqtype == MyKZQItem::End && this->isEndModelExist()){
+                QMessageBox::warning(nullptr, tr("warning"), tr("结束模块只允许有一个"));
+                break;
+            }
             kzqItem = new MyKZQItem(myItemMenu, kzqtype);
             addItem(kzqItem);
+            if(kzqtype == MyKZQItem::Begain)
+                this->setBegainModelState(true);
+            if(kzqtype == MyKZQItem::End)
+                this->setEndModelState(true);
             kzqItem->setPos(mouseEvent->scenePos());
             emit kzqItemInserted(kzqItem);
         }
@@ -99,6 +113,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                                         mouseEvent->scenePos()));
             line->setPen(QPen(Qt::red, 1.5, Qt::DashLine,
                               Qt::RoundCap, Qt::MiterJoin));
+            mousePressPos = mouseEvent->scenePos();
             addItem(line);
         break;
         default:
@@ -134,6 +149,7 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     Q_UNUSED(mouseEvent);
+    mouseReleasePos = mouseEvent->scenePos();
     if (line != nullptr && myMode == InsertLine) {
         QList<QGraphicsItem *> startItems = items(line->line().p1());
         if (startItems.count() && startItems.first() == line)
@@ -146,12 +162,14 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         delete line;
 
         if (startItems.count() > 0 && endItems.count() > 0 &&
-            (startItems.first()->type() == MyZXQItem::Type) &&
-            (endItems.first()->type() == MyZXQItem::Type) &&
+            (startItems.first()->type() == MyZXQItem::Type ||
+             startItems.first()->type() == MyKZQItem::Type) &&
+            (endItems.first()->type() == MyZXQItem::Type ||
+             endItems.first()->type() == MyKZQItem::Type) &&
             startItems.first() != endItems.first()) {
-            MyZXQItem *startItem = qgraphicsitem_cast<MyZXQItem*>(startItems.first());
-            MyZXQItem *endItem = qgraphicsitem_cast<MyZXQItem*>(endItems.first());
-            Arrow *arrow = new Arrow(startItem, endItem);
+            ModelGraphicsItem *startItem = dynamic_cast<ModelGraphicsItem*>(startItems.first());
+            ModelGraphicsItem *endItem = dynamic_cast<ModelGraphicsItem*>(endItems.first());
+            Arrow *arrow = new Arrow(startItem, endItem, mousePressPos, mouseReleasePos);
             arrow->setColor(Qt::black);
             startItem->addArrow(arrow);
             endItem->addArrow(arrow);
