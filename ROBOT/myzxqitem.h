@@ -21,14 +21,9 @@ public:
     ZXQType zxqType() const{return myZXQType;}
     bool hoverState() const{return isHover;}
 
-    QPointF startPointToPaintArrow(QPointF &point);
+    QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
     QPointF endPointToPaintArrow(QPointF &point);
-//    void removeArrow(Arrow *arrow);
-//    void removeArrows();
-//    void addArrow(Arrow *arrow);
-    QString getName() const{return myname;}  //用于获得模块在数据库中的唯一名字
-    void setName(QString &str){myname = str;}
-
+    int getChildType() const{return type();}
     MStartData data(){return MStart_Setting;}
 //    void setData(MStartData data);
 
@@ -48,7 +43,7 @@ signals:
 //    void readyToDrawLine(void);
 private:
 
-    QString myname;                 //用于记录该模块在属性表中的唯一标识名字
+//    QString myname;                 //用于记录该模块在属性表中的唯一标识名字
     QMenu *myContextMenu;
     QPolygonF myPolygon;
     ZXQType myZXQType;

@@ -58,10 +58,13 @@ QPointF MyZXQItem::endPointToPaintArrow(QPointF &point)
     return mapToScene(endPoint);
 }
 
-QPointF MyZXQItem::startPointToPaintArrow(QPointF &point)
+QVector<QPointF> MyZXQItem::startPointToPaintArrow(QPointF &point, bool notfirsttime)
 {
     Q_UNUSED(point);
-    return mapToScene(startPoint);
+    Q_UNUSED(notfirsttime);
+    QVector<QPointF> startpoints;
+    startpoints.append(startPoint);
+    return mapToScene(startpoints);
 }
 
 void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -167,19 +170,19 @@ void MyZXQItem::showPropertyDlg()
                     strtoshow += "1";
                     strtocontent += ("RUN(1," +
                                      QString().number((MStart_Setting.motorPower[1])) +
-                                     ")");
+                                     ");");
                 }
                 if(MStart_Setting.motorChecked[2]){
                     strtoshow += "1";
                     strtocontent += ("RUN(2," +
                                      QString().number((MStart_Setting.motorPower[2])) +
-                                     ")");
+                                     ");");
                 }
                 if(MStart_Setting.motorChecked[3]){
                     strtoshow += "1";
                     strtocontent += ("RUN(3," +
                                      QString().number((MStart_Setting.motorPower[3])) +
-                                     ")");
+                                     ");");
                 }
                 /**********************/
                 query.prepare("UPDATE property "

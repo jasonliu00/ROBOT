@@ -34,5 +34,17 @@
         <file>images/begain.PNG</file>
         <file>images/end.PNG</file>
         <file>images/panduan.PNG</file>
+        <file>images/dlgicon/AN_S.PNG</file>
+        <file>images/dlgicon/CSB_S.PNG</file>
+        <file>images/dlgicon/GZ_S.PNG</file>
+        <file>images/dlgicon/HY_S.PNG</file>
+        <file>images/dlgicon/KQ_S.PNG</file>
+        <file>images/dlgicon/SY_S.PNG</file>
+        <file>images/dlgicon/WSD_S.PNG</file>
+        <file>images/dlgicon/XJ_S.PNG</file>
+        <file>images/dlgicon/ZL_S.PNG</file>
+        <file>images/dlgicon/BZ_S.PNG</file>
+        <file>images/dlgicon/COUNTER_S.PNG</file>
+        <file>images/panduandlg.PNG</file>
     </qresource>
 </RCC>

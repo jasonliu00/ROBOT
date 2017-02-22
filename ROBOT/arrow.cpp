@@ -16,6 +16,7 @@ Arrow::Arrow(ModelGraphicsItem *startItem, ModelGraphicsItem *endItem,
              QPointF startPoint, QPointF endPoint, QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
 {
+    notfirsttimedraw = false;
     lineStartPoint = startPoint;
     lineEndPoint = endPoint;
     myStartItem = startItem;
@@ -55,6 +56,8 @@ QPainterPath Arrow::shape() const
 void Arrow::updatePosition()
 {
     QLineF line(mapFromItem(myStartItem, 0, 0), mapFromItem(myEndItem, 0, 0));
+//    qDebug() << "startItem point is " << mapFromItem(myStartItem, 0, 0)
+//             << ", EndItem point is " << mapFromItem(myEndItem, 0, 0);
     setLine(line);
 }
 //! [3]
@@ -71,7 +74,10 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     qreal arrowSize = 8;
     painter->setPen(myPen);
     painter->setBrush(myColor);
-    QPointF startPoint = myStartItem->startPointToPaintArrow(lineStartPoint);
+    QVector<QPointF> vector = myStartItem->startPointToPaintArrow(lineStartPoint, notfirsttimedraw);
+    QPointF startPoint = vector.at(0);
+    if(vector.count() > 1)
+        lineStartPoint = vector.at(1);
     QPointF endPoint = myEndItem->endPointToPaintArrow(lineEndPoint);
 //    qDebug() << "startPoint and endPoint are " << startPoint << endPoint;
     qreal endX = endPoint.x();
@@ -88,49 +94,6 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         myPolyline << point;
     }
 
-//    QLineF line1(endPoint, QPointF(endX, y));
-//    QLineF line2(QPointF(startX, y), startPoint);
-
-//    setLine(QLineF(myEndItem->inPosToScene(), myStartItem->outPosToScene()));
-//! [4] //! [5]
-//! /*判断直线的相交点，然后从起点到相交点划线*/
-//    QLineF centerLine(myStartItem-> pos(), myEndItem->pos());
-//    qDebug() << "startItemPos = " << myStartItem-> pos();
-//    qDebug() << "endItemPos = " << myEndItem-> pos();
-//    QPolygonF endPolygon = myEndItem->polygon();
-//    qDebug() << "endPolygon.first() = " << endPolygon.first();
-//    QPointF p1 = endPolygon.first() + myEndItem->pos();   //pos返回（0，0）点的scene坐标
-//    qDebug() << "p1 = " << p1;
-//    QPointF p2;
-//    QPointF intersectPoint;  //交点
-//    QLineF polyLine;
-//    qDebug() << "endPolygon.count() = " << endPolygon.count();
-//    for (int i = 1; i < endPolygon.count(); ++i) {
-//        p2 = endPolygon.at(i) + myEndItem->pos();
-//        qDebug() << "endPolygon.at(i) = " << endPolygon.at(i);
-//        qDebug() << "p2 = " << p2;
-//        polyLine = QLineF(p1, p2);
-////判断polyLine是否与centerLine相交，如果相交，交点提取到intersectPoint变量中
-//        QLineF::IntersectType intersectType =
-//            polyLine.intersect(centerLine, &intersectPoint);
-//        if (intersectType == QLineF::BoundedIntersection)
-//            qDebug() << "intersectPoint = " << intersectPoint;
-//            break;
-//        p1 = p2;
-//    }
-//    qDebug() << "QLineF is " << intersectPoint << myStartItem->pos();
-//    setLine(QLineF(intersectPoint, myStartItem->pos()));
-//! [5] //! [6]
-
-//    double angle = ::acos(line().dx() / line().length());
-//    if (line().dy() >= 0)
-//        angle = (Pi * 2) - angle;
-
-//    QPointF arrowP1 = line().p1() + QPointF(sin(angle + Pi / 3) * arrowSize,
-//                                    cos(angle + Pi / 3) * arrowSize);
-//    QPointF arrowP2 = line().p1() + QPointF(sin(angle + Pi - Pi / 3) * arrowSize,
-//                                    cos(angle + Pi - Pi / 3) * arrowSize);
-
     double angle = Pi / 2;
     QPointF arrowP1 = endPoint + QPointF(sin(angle + Pi / 3) * arrowSize,
                                          cos(angle + Pi / 3)* arrowSize);
@@ -140,22 +103,16 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     arrowHead.clear();
     arrowHead << endPoint << arrowP1 << arrowP2;
 //! [6] //! [7]
-//    painter->drawLine(line1);
-//    painter->drawLine(line2);
+
     painter->drawPolyline(polyline);
-//    painter->drawLine(line());
     painter->drawPolygon(arrowHead);
     if (isSelected()) {
         painter->setPen(QPen(/*myColor*/Qt::red, 1, Qt::SolidLine));
-//        QLineF myLine = line();
-//        myLine.translate(0, 4.0);
-//        painter->drawLine(myLine);
-//        myLine.translate(0,-8.0);
-//        painter->drawLine(myLine);
         painter->drawPolyline(polyline);
         painter->setBrush(Qt::red);
         painter->drawPolygon(arrowHead);
         }
+    notfirsttimedraw = true;
 }
 
 void Arrow::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

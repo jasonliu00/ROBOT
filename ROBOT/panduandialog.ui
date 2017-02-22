@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PanduanDialog</class>
+ <widget class="QDialog" name="PanduanDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>498</width>
+    <height>398</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>宋体</family>
+    <pointsize>11</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>401</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="tab_1">
+    <attribute name="title">
+     <string>条件一</string>
+    </attribute>
+    <widget class="QComboBox" name="comboBox1_VariableName">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>120</width>
+       <height>35</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox1_Operator">
+     <property name="geometry">
+      <rect>
+       <x>165</x>
+       <y>100</y>
+       <width>70</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>==</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>!=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&gt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&lt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&gt;=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&lt;=</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit1_CompareContent">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>100</y>
+       <width>113</width>
+       <height>35</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>条件二</string>
+    </attribute>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>51</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>有效</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox2_VariableName">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>120</width>
+       <height>35</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox2_Operator">
+     <property name="geometry">
+      <rect>
+       <x>165</x>
+       <y>100</y>
+       <width>70</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>==</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>!=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&gt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&lt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&gt;=</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>&lt;=</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit2_CompareContet">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>100</y>
+       <width>113</width>
+       <height>35</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>150</y>
+       <width>101</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>条件逻辑关系：</string>
+     </property>
+     <property name="buddy">
+      <cstring>comboBox2_Logic</cstring>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox2_Logic">
+     <property name="geometry">
+      <rect>
+       <x>165</x>
+       <y>150</y>
+       <width>70</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>与</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>或</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>非</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="okButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>350</y>
+     <width>75</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>确定</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>352</y>
+     <width>75</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>取消</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="pictureLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

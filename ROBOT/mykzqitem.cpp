@@ -1,27 +1,30 @@
 #include "mykzqitem.h"
 #include "mygraphicsscene.h"
 #include "arrow.h"
+#include "panduandialog.h"
 #include <QMenu>
 #include <QAction>
 #include <QPainterPath>
 #include <QtWidgets>
+#include <QSqlQuery>
+#include <QSqlError>
 MyKZQItem::MyKZQItem(QMenu *menu, KZQType kzqtype, QGraphicsItem *parent)
     :ModelGraphicsItem(parent)
 {
-
-    leftStartArea = QRectF(40, -5, 17, 10);
-    downStartArea = QRectF(20, -7, 17, 14);
+    /*****菱形的外接矩形为100*60*****/
+    myPdModelOutArea.NStartArea = QRectF(40, -5, 17, 10);
+    myPdModelOutArea.YStartArea = QRectF(-10, 20, 20, 14);
     myKZQType = kzqtype;
     myKZQName = KZQModelName[(int)kzqtype];
     myContextMenu = menu;
     createContextMenu();
-
+    propertySettingInit();
     inArea = QRectF(-6, -27, 12, 7);
     outArea = QRectF(-6, 20, 12, 7);
-    panduanArea.reserve(3);
-    panduanArea.push_back(QRectF(-6, -37, 12, 7));
-    panduanArea.push_back(QRectF(50, -6, 7, 12));
-    panduanArea.push_back(QRectF(-6, 30, 12, 7));
+    changeCursorArea.reserve(3);
+    changeCursorArea.push_back(QRectF(-6, -37, 12, 7));
+    changeCursorArea.push_back(QRectF(50, -6, 7, 12));
+    changeCursorArea.push_back(QRectF(-6, 30, 12, 7));
     switch(myKZQType){
     case Begain:
         myPath.moveTo(-30, -20);
@@ -53,20 +56,39 @@ MyKZQItem::MyKZQItem(QMenu *menu, KZQType kzqtype, QGraphicsItem *parent)
 //    setAcceptHoverEvents(true); //想要接受鼠标hover的事件必须设置此句
 }
 
-QPointF MyKZQItem::startPointToPaintArrow(QPointF &point)
+QVector<QPointF> MyKZQItem::startPointToPaintArrow(QPointF &point, bool notfirsttime)
 {
+    QVector<QPointF> vector;
+    vector.reserve(2);
     if(myKZQType == Begain){
-        return mapToScene(QPointF(0, 20));
+        vector.append(QPointF(0, 20));
+        return mapToScene(vector);
     }
     if(myKZQType == Panduan){
-        QPointF tempp = mapToItem(this, point);
-        if(leftStartArea.contains(tempp))
-            return mapToScene(QPointF(50, 0));
-        if(downStartArea.contains(tempp))
-            return mapToScene(QPointF(0, 30));
+        if(notfirsttime == true){
+            vector.append(mapToScene(point));
+            vector.append(point);
+            return vector;
+        }else{
+            QPointF tempp = mapFromScene(point);
+            if(myPdModelOutArea.NStartArea.contains(tempp))
+            {
+                vector.append(mapToScene(QPointF(50, 0)));
+                vector.append(QPointF(50, 0));
+                YorNOut = N;
+                return vector;
+            }
+            if(myPdModelOutArea.YStartArea.contains(tempp)){
+                vector.append(mapToScene(QPointF(0, 30)));
+                vector.append(QPointF(0, 30));
+                YorNOut = Y;
+                return vector;
+            }
+        }
     }
-    qDebug() << "Error happend. point is not within avaliable area.";
-    return QPointF(0, 0);
+//    qDebug() << "Error happend. point is not within avaliable area.";
+    vector.append(QPointF(0, 0));
+    return vector;
 }
 
 QPointF MyKZQItem::endPointToPaintArrow(QPointF &point)
@@ -125,6 +147,12 @@ void MyKZQItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->setPen(QPen(Qt::black, 1));
     painter->drawPath(myPath);
     painter->drawText(QRect(-30, -20, 60, 40), Qt::AlignCenter, myKZQName);
+    if(myKZQType == Panduan){
+        QFont font1("TimesNewRoman", 9);
+        painter->setFont(font1);
+        painter->drawText(QRect(35, -5, 10, 10), Qt::AlignCenter, "N");
+        painter->drawText(QRect(-5, 15, 10, 10), Qt::AlignCenter, "Y");
+    }
 }
 
 QRectF MyKZQItem::boundingRect() const
@@ -170,7 +198,7 @@ void MyKZQItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
         }
         break;
     case Panduan:
-        foreach(QRectF rect, panduanArea){
+        foreach(QRectF rect, changeCursorArea){
             if(rect.contains(event->pos())){
                 isHover = true;
                 setCursor(Qt::CrossCursor);
@@ -196,7 +224,49 @@ void MyKZQItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void MyKZQItem::showPropertyDlg()
 {
-
+    QSqlQuery query;
+    if(myKZQType == KZQType::Panduan){
+        PanduanDialog dlg(panduanDialogData);
+        if(dlg.exec()){
+            panduanDialogData.setData(dlg.data());
+            QString content;
+            if(panduanDialogData.tj2_isEnable){
+                if(panduanDialogData.tj2_logicVersusTj1 == "与")
+                    content = QString("%1%2%3&&%4%5%6").arg(panduanDialogData.tj1_variableName)
+                                                       .arg(panduanDialogData.tj1_operator)
+                                                       .arg(panduanDialogData.tj1_compareContent)
+                                                       .arg(panduanDialogData.tj2_variableName)
+                                                       .arg(panduanDialogData.tj2_operator)
+                                                       .arg(panduanDialogData.tj2_compareContent);
+                else if(panduanDialogData.tj2_logicVersusTj1 == "或")
+                    content = QString("%1%2%3||%4%5%6").arg(panduanDialogData.tj1_variableName)
+                                                       .arg(panduanDialogData.tj1_operator)
+                                                       .arg(panduanDialogData.tj1_compareContent)
+                                                       .arg(panduanDialogData.tj2_variableName)
+                                                       .arg(panduanDialogData.tj2_operator)
+                                                       .arg(panduanDialogData.tj2_compareContent);
+                else
+                    content = QString("%1%2%3!%4%5%6").arg(panduanDialogData.tj1_variableName)
+                                                       .arg(panduanDialogData.tj1_operator)
+                                                       .arg(panduanDialogData.tj1_compareContent)
+                                                       .arg(panduanDialogData.tj2_variableName)
+                                                       .arg(panduanDialogData.tj2_operator)
+                                                       .arg(panduanDialogData.tj2_compareContent);
+            }else{
+                content = QString("%1%2%3").arg(panduanDialogData.tj1_variableName)
+                                                   .arg(panduanDialogData.tj1_operator)
+                                                   .arg(panduanDialogData.tj1_compareContent);
+            }
+            query.prepare("UPDATE property SET content = :content "
+                          "WHERE name = :name;");
+            query.addBindValue(content);
+            query.addBindValue(this->getName());
+            if(!query.exec()){
+                qDebug() << "UPDATE property to set panduan model content failed\n"
+                         << query.lastError().text();
+            }
+        }
+    }
 }
 
 void MyKZQItem::drawAngle(QPainter *painter, QPointF startpoint, QPointF midpoint, QPointF endpoint)
@@ -222,4 +292,16 @@ void MyKZQItem::createContextMenu()
     connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDlg()));
     contextmenu->addAction(deleteAction);
     contextmenu->addAction(propertyAction);
+}
+
+void MyKZQItem::propertySettingInit()
+{
+    panduanDialogData.tj1_variableName = "";
+    panduanDialogData.tj1_compareContent = "";
+    panduanDialogData.tj1_operator = "==";
+    panduanDialogData.tj2_isEnable = false;
+    panduanDialogData.tj2_variableName = "";
+    panduanDialogData.tj2_compareContent = "";
+    panduanDialogData.tj2_operator = "==";
+    panduanDialogData.tj2_logicVersusTj1 = "与";
 }

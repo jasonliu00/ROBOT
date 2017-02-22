@@ -21,3 +21,15 @@ void RingData::setData(RingData data)
     yinpinID = data.yinpinID;
     yinfuID = data.yinfuID;
 }
+
+void PanduanData::setData(PanduanData data)
+{
+    tj1_variableName = data.tj1_variableName;
+    tj1_operator = data.tj1_operator;
+    tj1_compareContent = data.tj1_compareContent;
+    tj2_isEnable = data.tj2_isEnable;
+    tj2_variableName = data.tj2_variableName;
+    tj2_operator = data.tj2_operator;
+    tj2_compareContent = data.tj2_compareContent;
+    tj2_logicVersusTj1 = data.tj2_logicVersusTj1;
+}

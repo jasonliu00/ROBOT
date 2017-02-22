@@ -9,12 +9,15 @@ class MyCGQItem : public QGraphicsPolygonItem
 public:
     enum { Type = MyCGQItemType }; //确定每种Item的类型，唯一标识
     enum CGQType{GZ_S = 0, WSD_S, BZ_S, SY_S, AN_S, COUNTER_S, HY_S, CSB_S, XJ_S, KQ_S, ZL_S};
+    QString CGQNameInDB[11] = {"GZ_S", "WSD_S", "BZ_S", "SY_S", "AN_S", "COUNTER_S", "HY_S",
+                               "CSB_S", "XJ_S", "KQ_S", "ZL_S"};
     QString CGQName[11]={"光照检测", "温湿度检测", "避障检测", "声音检测", "按钮检测",
                       "计数器", "火焰检测", "超声波检测", "循迹检测", "空气检测", "重量检测"};
     MyCGQItem(QMenu *menu, CGQType cgqtype, QGraphicsItem *parent = Q_NULLPTR);
     QPixmap image() const;
 
     CGQType cgqType() const{return myCGQType;}
+    QString getCGQNameInDB() const{return CGQNameInDB[int(myCGQType)];}
     int type() const Q_DECL_OVERRIDE { return Type;}
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

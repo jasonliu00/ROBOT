@@ -3,6 +3,9 @@
 #include "graphicwidget.h"
 #include "motorstartdialog.h"
 #include <QSqlQuery>
+#include <QSqlError>
+#include <QIODevice>
+#include <QTextStream>
 
 RobotMainWindow::RobotMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -118,5 +121,72 @@ void RobotMainWindow::showMotorDlg()
 
 void RobotMainWindow::compellProgram()
 {
-//    QSqlQuery query;
+    QSqlQuery query;
+    QString out0;
+    QFile file("e:/Robotprogram/demo.txt");
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug() << "can not open file\n";
+        file.close();
+        return;
+    }
+    QTextStream in(&file);
+    /***********判断有无开始模块***********/
+    if(!query.exec("SELECT out0, content FROM property WHERE name = 'CSH';")){
+        qDebug() << "Select CSH module query failed\n"
+                 << query.lastError().text();
+        file.close();
+        return;
+    }
+    if(!query.next()){
+        QMessageBox::warning(this, tr("warning"), tr("缺少开始模块！"));
+        file.close();
+        return;
+    }else if(query.value(0).toString() == NULL){
+        QMessageBox::warning(this, tr("warning"), tr("请连接开始模块！"));
+        file.close();
+        return;
+    }else{
+        out0 = query.value(0).toString();
+        in << "CSH:\n";
+        if(query.value(1).toString() == NULL)
+            in << "/\n";
+        else
+            in << query.value(1).toString();
+        in << "GOTO:" << out0 << ";\n";
+    }
+    /********遍历表**********/
+    if(!query.exec("SELECT type, name, innum, out0, out1, content FROM property WHERE innum != 0;")){
+        qDebug() << "Select innum != 0 query failded\n"
+                 << query.lastError().text();
+        file.close();
+        return;
+    }
+    while(query.next()){
+        /***********判断有无结束模块***********/
+        if(query.value(3).toString() == NULL && query.value(0).toString() != "JS"){
+            QMessageBox::warning(this, tr("warning"), tr("缺少结束模块，请连接结束模块！"));
+            file.close();
+            return;
+        }
+        in << query.value(1).toString() << ":\n";
+        /************单独处理判断模块**************/
+        if(query.value(0).toString() == "PD"){
+            in << "IF " << query.value(5).toString() << "\n";
+            in << "GOTO:" << query.value(3).toString() << ";\n";
+            if(query.value(4).toString() == NULL)
+                in << "ELSE GOTO:/\n";
+            else
+                in << "ELSE GOTO:" << query.value(4).toString() << ";\n";
+        }
+        else{
+            if(query.value(5).toString() == NULL)
+                in << "/\n";
+            else
+                in << query.value(5).toString() << "\n";
+            if(query.value(0).toString() != "JS")
+                in << "GOTO:" << query.value(3).toString() << ";\n";
+        }
+    }
+
+    file.close();
 }

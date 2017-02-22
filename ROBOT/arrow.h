@@ -48,6 +48,7 @@ private:
     ModelGraphicsItem *myEndItem;
     QPointF lineStartPoint;
     QPointF lineEndPoint;
+    bool notfirsttimedraw;
     QColor myColor;
     QPolygonF arrowHead;
     QPolygonF myPolyline;

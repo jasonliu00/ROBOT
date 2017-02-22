@@ -11,6 +11,7 @@
 #include "startmotordialog.h"
 #include "stopmotordialog.h"
 #include <QSqlQuery>
+#include <QSqlError>
 
 
 GraphicWidget::GraphicWidget(QWidget *parent) :
@@ -24,14 +25,25 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
                    "no	INT UNSIGNED NOT NULL AUTO_INCREMENT,"
                    "type	VARCHAR(20) NOT NULL,"
                    "name	VARCHAR(20) NOT NULL,"
-                   "out0    VARCHAR(20),"
-                   "out1    VARCHAR(20),"
-                   "content VARCHAR(40),"
+                   "innum      INT UNSIGNED NOT NULL DEFAULT '0',"   //记录模块输入点的个数
+                   "out0    VARCHAR(20) DEFAULT NULL,"
+                   "out1    VARCHAR(20) DEFAULT NULL,"
+                   "content VARCHAR(40) DEFAULT NULL,"
                    "UNIQUE INDEX (no),"
                    "PRIMARY KEY (name)"
                ")ENGINE = InnoDB;");
 
-    qDebug() << "the query result is " << result;
+    qDebug() << "the Create property table query result is " << result;
+    if(!result)
+        qDebug() << query.lastError().text();
+    result = query.exec("CREATE TABLE IF NOT EXISTS sensorvariable"
+                        "("
+                            "no INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+                            "name    VARCHAR(20) NOT NULL,"
+                            "UNIQUE INDEX (no),"
+                            "PRIMARY KEY (name)"
+                        ")ENGINE = InnoDB;");
+    qDebug() << "the Create sensorvariable table query result is " << result;
     createAction();
     itemMenu = new QMenu(tr("Item"));
     itemMenu->addAction(deleteAction);
@@ -64,8 +76,8 @@ GraphicWidget::~GraphicWidget()
 {
     delete ui;
     QSqlQuery query;
-    if(query.exec("DROP TABLE property")){
-        qDebug() << "TABLE property has been successfully dropped!";
+    if(query.exec("DROP TABLES property, sensorvariable;")){
+        qDebug() << "TABLE property and sensorvariable have been successfully dropped!";
     }
 }
 
@@ -244,6 +256,7 @@ void GraphicWidget::kzqItemInserted(MyKZQItem *item)
 
 void GraphicWidget::deleteItem()
 {
+    QSqlQuery query;
     foreach (QGraphicsItem *item, scene->selectedItems()) {
         if (item->type() == Arrow::Type) {
             scene->removeItem(item);
@@ -255,19 +268,80 @@ void GraphicWidget::deleteItem()
     }
 
     foreach (QGraphicsItem *item, scene->selectedItems()) {
-         if (item->type() == MyZXQItem::Type)
-             qgraphicsitem_cast<MyZXQItem *>(item)->removeArrows();
-         else if(item->type() == MyKZQItem::Type){
-             MyKZQItem *tmp = qgraphicsitem_cast<MyKZQItem *>(item);
-             tmp->removeArrows();
-             MyKZQItem::KZQType t = tmp->kzqType();
-             if(t == MyKZQItem::Begain)
-                 scene->setBegainModelState(false);
-             else if(t == MyKZQItem::End)
-                 scene->setEndModelState(false);
-         }
-         scene->removeItem(item);
-         delete item;
+        if(item->type() == MyCGQItem::Type){
+            scene->removeItem(item);
+            QString itemname = qgraphicsitem_cast<MyCGQItem *>(item)->getCGQNameInDB();
+            query.prepare("DELETE FROM sensorvariable WHERE name = :itemname;");
+            query.addBindValue(itemname);
+            query.exec();
+            delete item;
+        }else{
+            if(item->type() == MyZXQItem::Type)
+                 qgraphicsitem_cast<MyZXQItem *>(item)->removeArrows();
+            else if(item->type() == MyKZQItem::Type){
+                 MyKZQItem *tmp = qgraphicsitem_cast<MyKZQItem *>(item);
+                 tmp->removeArrows();
+                 MyKZQItem::KZQType t = tmp->kzqType();
+                 if(t == MyKZQItem::Begain)
+                     scene->setBegainModelState(false);
+                 else if(t == MyKZQItem::End)
+                     scene->setEndModelState(false);
+             }
+             scene->removeItem(item);
+             QString modulename = ((ModelGraphicsItem*)item)->getName();
+             /********记录删除模块的输出节点，并对对应的输出节点的in字段减一**********/
+             query.prepare("SELECT out0, out1 FROM property WHERE name = :modulename and type <> 'JS';");
+             query.addBindValue(modulename);
+             if(!query.exec()){
+                 qDebug() << "SELECT out0, out1 query failed in function QGraphicWidget::deleteItem()\n"
+                        << query.lastError().text();
+             }
+             if(query.next()){
+                 QString out0 = query.value(0).toString();
+                 QString out1 = query.value(1).toString();
+                 query.prepare("SELECT innum FROM property WHERE name = :out0 or name = :out1;");
+                 query.addBindValue(out0);
+                 query.addBindValue(out1);
+                 if(!query.exec()){
+                     qDebug() << "SELECT innum query failed in function QGraphicWidget::deleteItem()\n"
+                            << query.lastError().text();
+                 }
+                 query.next();
+                 int out0_in_num = query.value(0).toInt() - 1;
+                 QSqlQuery tempquery;
+                 tempquery.prepare("UPDATE property SET innum = :num WHERE name = :out0;");
+                 tempquery.addBindValue(out0_in_num);
+                 tempquery.addBindValue(out0);
+                 tempquery.exec();
+                 if(query.next()){
+                     int out1_in_num = query.value(0).toInt() - 1;
+                     tempquery.prepare("UPDATE property SET innum = :num WHERE name = :out1;");
+                     tempquery.addBindValue(out1_in_num);
+                     tempquery.addBindValue(out1);
+                     tempquery.exec();
+                 }
+             }
+             /***********删除模块的记录，并更新受影响的记录的out字段***********/
+             query.prepare("DELETE FROM property WHERE name = :modulename;");
+             query.addBindValue(modulename);
+             if(!query.exec()){
+                 qDebug() << "DELETE module failed\n"
+                          << query.lastError().text();
+             }
+             query.prepare("UPDATE property SET out0 = NULL WHERE out0 = :modulename;");
+             query.addBindValue(modulename);
+             if(!query.exec()){
+                 qDebug() << "UPDATE property out0 where modules connect to the delete items failed\n"
+                          << query.lastError().text();
+             }
+             query.prepare("UPDATE property SET out1 = NULL WHERE out1 = :modulename;");
+             query.addBindValue(modulename);
+             if(!query.exec()){
+                 qDebug() << "UPDATE property out1 where modules connect to the delete items failed\n"
+                          << query.lastError().text();
+             }
+             delete item;
+        }
     }
 }
 
