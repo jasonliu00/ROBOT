@@ -26,12 +26,15 @@ public:
     MyKZQItem(QMenu *menu, KZQType kzqtype, QGraphicsItem *parent = Q_NULLPTR);
     int type() const Q_DECL_OVERRIDE {return Type;}
     KZQType kzqType() const {return myKZQType;}
+    void setKZQType(KZQType &type) {myKZQType = type;}
     bool hoverState() const{return isHover;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
     pdModelOutArea getPdModelOutArea() const{return myPdModelOutArea;}
-
+    PdData pdDlgData() const{return panduanDialogData;}
+    void setPdDlgData(PdData &data) {panduanDialogData.setData(data);}
+    QList<Arrow *> arrows;
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 //    QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
@@ -58,7 +61,7 @@ private:
     pdModelOutArea myPdModelOutArea;
     QVector<QRectF> changeCursorArea;
 
-    QList<Arrow *> arrows;
+//    QList<Arrow *> arrows;
 
     QMenu *contextmenu;
     QAction *propertyAction;
@@ -68,5 +71,8 @@ private:
     void createContextMenu();
     void propertySettingInit();
 };
+
+QDataStream &operator<<(QDataStream &out, const MyKZQItem &kzqItem);
+QDataStream &operator>>(QDataStream &in, MyKZQItem &kzqItem);
 
 #endif // MYKZQITEM_H

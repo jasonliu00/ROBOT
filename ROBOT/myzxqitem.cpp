@@ -162,27 +162,31 @@ void MyZXQItem::showPropertyDlg()
                 QString strtocontent = "";
                 if(MStart_Setting.motorChecked[0]){
                     strtoshow += "0";
-                    strtocontent += ("RUN(0," +
-                                     QString().number(MStart_Setting.motorPower[0]) +
-                                     ");");
+//                    strtocontent += ("RUN(0," +
+//                                     QString().number(MStart_Setting.motorPower[0]) +
+//                                     ");");
+                    strtocontent += QString("RUN(0,%1);").arg(MStart_Setting.motorPower[0], 3, 10, QLatin1Char('0'));
                 }
                 if(MStart_Setting.motorChecked[1]){
                     strtoshow += "1";
-                    strtocontent += ("RUN(1," +
-                                     QString().number((MStart_Setting.motorPower[1])) +
-                                     ");");
+//                    strtocontent += ("RUN(1," +
+//                                     QString().number((MStart_Setting.motorPower[1])) +
+//                                     ");\n");
+                    strtocontent += QString("RUN(1,%1);").arg(MStart_Setting.motorPower[1], 3, 10, QLatin1Char('0'));
                 }
                 if(MStart_Setting.motorChecked[2]){
-                    strtoshow += "1";
-                    strtocontent += ("RUN(2," +
-                                     QString().number((MStart_Setting.motorPower[2])) +
-                                     ");");
+                    strtoshow += "2";
+//                    strtocontent += ("RUN(2," +
+//                                     QString().number((MStart_Setting.motorPower[2])) +
+//                                     ");");
+                    strtocontent += QString("RUN(2,%1);").arg(MStart_Setting.motorPower[2], 3, 10, QLatin1Char('0'));
                 }
                 if(MStart_Setting.motorChecked[3]){
-                    strtoshow += "1";
-                    strtocontent += ("RUN(3," +
-                                     QString().number((MStart_Setting.motorPower[3])) +
-                                     ");");
+                    strtoshow += "3";
+//                    strtocontent += ("RUN(3," +
+//                                     QString().number((MStart_Setting.motorPower[3])) +
+//                                     ");");
+                    strtocontent += QString("RUN(3,%1);").arg(MStart_Setting.motorPower[3], 3, 10, QLatin1Char('0'));
                 }
                 /**********************/
                 query.prepare("UPDATE property "
@@ -282,7 +286,7 @@ void MyZXQItem::showPropertyDlg()
             RingDialog dlg(ringsetting);
             if(dlg.exec()){
                 ringsetting = dlg.data();
-                QString strcontent = QString("RING(%1, %2);")
+                QString strcontent = QString("BEEP(%1, %2);")
                         .arg(ringsetting.yinfuTime, 0, 'f', 4)   //4代表精度，即小数点之后4位保留
                         .arg(yinpin[ringsetting.yinpinID], 0, 'f', 1);
                 query.prepare("UPDATE property "
@@ -378,4 +382,110 @@ void MyZXQItem::propertySettingInit()
     ringsetting.yinfuTime = 1.0;//默认时间为1s
 
     showstring = "\\n\\n\\n\\n\\n\\n";
+}
+
+QDataStream &operator<<(QDataStream &out, const MyZXQItem &zxqItem)
+{
+    MyZXQItem::ZXQType zxqType = zxqItem.zxqType();
+    out << zxqItem.getName() << zxqItem.pos()
+        << zxqItem.zValue();
+
+    switch(zxqType){
+        case MyZXQItem::MotorStart:{
+            MStartData msdata;
+            msdata.setData(zxqItem.mstartData());
+            for(int i = 0; i < msdata.num; i++)
+                out << msdata.motorChecked[i] << msdata.motorPower[i];
+            break;
+        }
+        case MyZXQItem::MotorStop:{
+            MStopData mstopdata;
+            mstopdata.setData(zxqItem.mstopData());
+            for(int i = 0; i < mstopdata.num; i++)
+                out << mstopdata.motorChecked[i];
+            break;
+        }
+        case MyZXQItem::Show:{
+            out << zxqItem.showData();
+            break;
+        }
+
+        case MyZXQItem::Light:{
+            out << zxqItem.lightData();
+            break;
+        }
+        case MyZXQItem::Ring:{
+            RingData ringdata;
+            ringdata.setData(zxqItem.ringData());
+            out << ringdata.yinfuID << ringdata.yinfuTime
+                << ringdata.yinpinID;
+            break;
+        }
+        case MyZXQItem::Delay:{
+            out << zxqItem.delayData();
+            break;
+        }
+        default:
+        break;
+    }
+
+    return out;
+}
+
+
+QDataStream &operator>>(QDataStream &in, MyZXQItem &zxqItem)
+{
+    QPointF position;
+    MyZXQItem::ZXQType zxqType = zxqItem.zxqType();
+    double z;
+    QString modelName;
+
+    in >> modelName >> position >> z;
+
+    switch(zxqType){
+        case MyZXQItem::MotorStart:{
+            MStartData msdata;
+            for(int i = 0; i < msdata.num; i++)
+                in >> msdata.motorChecked[i] >> msdata.motorPower[i];
+            zxqItem.setMStartData(msdata);
+            break;
+        }
+        case MyZXQItem::MotorStop:{
+            MStopData msdata;
+            for(int i = 0; i < msdata.num; i++)
+                in >> msdata.motorChecked[i];
+            zxqItem.setMStopData(msdata);
+            break;
+        }
+        case MyZXQItem::Show:{
+            QString str;
+            in >> str;
+            zxqItem.setShowData(str);
+            break;
+        }
+        case MyZXQItem::Light:{
+            bool lightstate;
+            in >> lightstate;
+            zxqItem.setLightData(lightstate);
+            break;
+        }
+        case MyZXQItem::Ring:{
+            RingData rdata;
+            in >> rdata.yinfuID << rdata.yinfuTime
+                                << rdata.yinpinID;
+            zxqItem.setRingData(rdata);
+            break;
+        }
+        case MyZXQItem::Delay:{
+            double delaytime;
+            in >> delaytime;
+            zxqItem.setDelayData(delaytime);
+            break;
+        }
+    }
+
+    zxqItem.setPos(position);
+    zxqItem.setZValue(z);
+    zxqItem.setName(modelName);
+    return in;
 }

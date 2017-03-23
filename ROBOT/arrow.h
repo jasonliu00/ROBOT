@@ -37,7 +37,12 @@ public:
     void setPolyline(QPolygonF polyline){myPolyline = polyline;}
     void setLineStartPoint(QPointF p){lineStartPoint = p;}
     void setLineEndPoint(QPointF p){lineEndPoint = p;}
-
+    QPointF getStartPoint() const {return lineStartPoint;}
+    QPointF getEndPoint() const {return lineEndPoint;}
+    QString getStartItemName() const {return startItemNameInDB;}
+    QString getEndItemName() const {return endItemNameInDB;}
+    void setStartItemName(QString &name) {startItemNameInDB = name;}
+    void setEndItemName(QString &name) {endItemNameInDB = name;}
     void updatePosition();
 
 protected:
@@ -52,11 +57,16 @@ private:
     QColor myColor;
     QPolygonF arrowHead;
     QPolygonF myPolyline;
-
+    QString startItemNameInDB;
+    QString endItemNameInDB;
     QPolygonF computePolygon() const;
 //    QMenu *myContextMenu;
 //    QAction *deleteAction;
 };
+
+QDataStream &operator<<(QDataStream &out, const Arrow &arrow);
+QDataStream &operator>>(QDataStream &in, Arrow &arrow);
+
 //! [0]
 
 #endif // ARROW_H

@@ -50,4 +50,22 @@ void MyCGQItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawText(rect, Qt::AlignCenter, myCGQName);
 }
 
+QDataStream &operator<<(QDataStream &out, const MyCGQItem &cgqItem)
+{
+    out /*<< cgqItem.cgqType() */<< cgqItem.pos()
+        << cgqItem.zValue();
+    return out;
+}
 
+
+QDataStream &operator>>(QDataStream &in, MyCGQItem &cgqItem)
+{
+    QPointF position;
+    double z;
+//    MyCGQItem::CGQType type;
+    in /*>> type */>> position >> z;
+    cgqItem.setPos(position);
+    cgqItem.setZValue(z);
+//    cgqItem.setCGQType(type);
+    return in;
+}

@@ -5,6 +5,8 @@
 #include <QtWidgets>
 #include "mygraphicsscene.h"
 
+const qint32 MagicNumber = 0x5A93DE5;
+const qint16 VersionNumber = 1;
 namespace Ui {
 class RobotMainWindow;
 }
@@ -22,7 +24,26 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
-
+    bool okToClearData();
+    void loadFile();
+    void readItems(QDataStream &in, int offset=0, bool select=false);
+    void writeItems(QDataStream &out,
+                    const QList<QGraphicsItem*> &items);
+    void setDirty(bool on);
+    void clear();
+    bool openRobotProgramFile(QFile *file, QDataStream &in);
+    void saveDB(const QString &path);
+    void loadDB(const QString &path);
+    void clearDB();
+private slots:
+    void fileOpen();
+    void fileNew();
+    bool fileSave();
+    bool fileSaveAs();
+    void showMotorDlg();
+    void compellProgram();
+    bool download();
+    void about();
 
 private:
     Ui::RobotMainWindow *ui;
@@ -37,6 +58,7 @@ private:
 
     QAction *newAction;
     QAction *saveAction;
+    QAction *saveAsAction;
     QAction *openAction;
     QAction *compellAction;
     QAction *downloadAction;
@@ -44,14 +66,13 @@ private:
     QAction *motorStartAction;
 
     QMenu *fileMenu;
-    QMenu *itemMenu;
+    QMenu *editMenu;
     QMenu *aboutMenu;
 
     QToolBar *toolBar;
 
-private slots:
-    void showMotorDlg();
-    void compellProgram();
+    QString dbFileName;
+    QString proFileName;
 
 
 //    MyGraphicsScene *scene;

@@ -92,7 +92,7 @@ void GraphicWidget::createToolBox()
     QGridLayout *cgqLayout = new QGridLayout;
     cgqLayout->addWidget(createCGQCellWidget(tr("光照传感器"), MyCGQItem::GZ_S,
                                                   ":/images/GZ_S.PNG"), 0, 0);
-    cgqLayout->addWidget(createCGQCellWidget(tr("温湿度传感器"), MyCGQItem::WSD_S,
+    cgqLayout->addWidget(createCGQCellWidget(tr("温度传感器"), MyCGQItem::WD_S,
                                                   ":/images/WSD_S.PNG"), 0, 1);
     cgqLayout->addWidget(createCGQCellWidget(tr("避障传感器"), MyCGQItem::BZ_S,
                                                   ":/images/BZ_S.PNG"), 1, 0);
@@ -100,11 +100,11 @@ void GraphicWidget::createToolBox()
                                                   ":/images/SY_S.PNG"), 1, 1);
     cgqLayout->addWidget(createCGQCellWidget(tr("按钮检测"), MyCGQItem::AN_S,
                                                   ":/images/AN_S.PNG"), 2, 0);
-    cgqLayout->addWidget(createCGQCellWidget(tr("计数器"), MyCGQItem::COUNTER_S,
+    cgqLayout->addWidget(createCGQCellWidget(tr("湿度检测"), MyCGQItem::DH_S,
                                                   ":/images/COUNTER.PNG"), 2, 1);
     cgqLayout->addWidget(createCGQCellWidget(tr("火焰传感器"), MyCGQItem::HY_S,
                                                   ":/images/HY_S.PNG"), 3, 0);
-    cgqLayout->addWidget(createCGQCellWidget(tr("超声波传感器"), MyCGQItem::CSB_S,
+    cgqLayout->addWidget(createCGQCellWidget(tr("超声波传感器"), MyCGQItem::CS_S,
                                                   ":/images/CSB_S.PNG"), 3, 1);
     cgqLayout->addWidget(createCGQCellWidget(tr("循迹传感器"), MyCGQItem::XJ_S,
                                                   ":/images/XJ_S.PNG"), 4, 0);
@@ -213,28 +213,6 @@ void GraphicWidget::kzqButtonGroupClicked(int id)
     scene->setKZQType(MyKZQItem::KZQType(id));
 }
 
-//void GraphicWidget::backgroundButtonGroupClicked(QAbstractButton *button)
-//{
-//    QList<QAbstractButton *> buttons = backgroundButtonGroup->buttons();
-//    foreach (QAbstractButton *myButton, buttons) {
-//        if (myButton != button)
-//            button->setChecked(false);
-//    }
-
-//    QString text = button->text();
-//    if(text == tr("马达启动"))
-//        scene->setBackgroundBrush(QPixmap(":/images/Mstart.PNG"));
-//    else if(text == tr("马达停止"))
-//        scene->setBackgroundBrush(QPixmap(":/images/Mstop.PNG"));
-//    else if(text == tr("显示"))
-//        scene->setBackgroundBrush(QPixmap(":/images/show.PNG"));
-//    else
-//        scene->setBackgroundBrush(QPixmap(":/images/light.PNG"));
-
-//    scene->update();
-//    view->update();
-//}
-
 void GraphicWidget::cgqItemInserted(MyCGQItem *item)
 {
     cgqButtonGroup->button(static_cast<int>(item->cgqType()))->setChecked(false);
@@ -299,27 +277,33 @@ void GraphicWidget::deleteItem()
              if(query.next()){
                  QString out0 = query.value(0).toString();
                  QString out1 = query.value(1).toString();
-                 query.prepare("SELECT innum FROM property WHERE name = :out0 or name = :out1;");
+                 query.prepare("SELECT innum FROM property WHERE name = :out0;");
                  query.addBindValue(out0);
-                 query.addBindValue(out1);
                  if(!query.exec()){
-                     qDebug() << "SELECT innum query failed in function QGraphicWidget::deleteItem()\n"
+                     qDebug() << "SELECT innum of out0 query failed in function QGraphicWidget::deleteItem()\n"
                             << query.lastError().text();
                  }
-                 query.next();
-                 int out0_in_num = query.value(0).toInt() - 1;
-                 QSqlQuery tempquery;
-                 tempquery.prepare("UPDATE property SET innum = :num WHERE name = :out0;");
-                 tempquery.addBindValue(out0_in_num);
-                 tempquery.addBindValue(out0);
-                 tempquery.exec();
+                 if(query.next()){
+                     int out0_in_num = query.value(0).toInt() - 1;
+                     query.prepare("UPDATE property SET innum = :num WHERE name = :out0;");
+                     query.addBindValue(out0_in_num);
+                     query.addBindValue(out0);
+                     query.exec();
+                 }
+                 query.prepare("SELECT innum FROM property WHERE name = :out1;");
+                 query.addBindValue(out1);
+                 if(!query.exec()){
+                     qDebug() << "SELECT innum of out1 query failed in function QGraphicWidget::deleteItem()\n"
+                            << query.lastError().text();
+                 }
                  if(query.next()){
                      int out1_in_num = query.value(0).toInt() - 1;
-                     tempquery.prepare("UPDATE property SET innum = :num WHERE name = :out1;");
-                     tempquery.addBindValue(out1_in_num);
-                     tempquery.addBindValue(out1);
-                     tempquery.exec();
+                     query.prepare("UPDATE property SET innum = :num WHERE name = :out1;");
+                     query.addBindValue(out1_in_num);
+                     query.addBindValue(out1);
+                     query.exec();
                  }
+
              }
              /***********删除模块的记录，并更新受影响的记录的out字段***********/
              query.prepare("DELETE FROM property WHERE name = :modulename;");

@@ -13,15 +13,15 @@ const float yinpin[22] = {0.0, 1047.0, 1175.0, 1319.0, 1397.0, 1568.0, 1760.0, 1
 const float yinfu[4] = {0.5, 0.25, 0.125, 0.0625};
 
 struct MotorStartData{
+    const int num = 4;
     bool motorChecked[4];
     int motorPower[4];
-    const int num = 4;
 
     void setData(MStartData data);
 };
 struct MotorStopData{
-    bool motorChecked[4];
     const int num = 4;
+    bool motorChecked[4];
 
     void setData(MStopData data);
 };
@@ -49,13 +49,13 @@ struct PanduanData{
 /*************用C++11的新特性--初始化列表初始化,需要Qt5.1以上版本***************/
 const QMap<QString, QString> sensorIconMap({std::pair<QString, QString>("ZL_S", ":/images/dlgicon/ZL_S.PNG"),
                                             std::pair<QString, QString>("AN_S", ":/images/dlgicon/AN_S.PNG"),
-                                            std::pair<QString, QString>("COUNTER_S", ":/images/dlgicon/COUNTER_S.PNG"),
-                                            std::pair<QString, QString>("CSB_S", ":/images/dlgicon/CSB_S.PNG"),
+                                            std::pair<QString, QString>("DH_S", ":/images/dlgicon/COUNTER_S.PNG"),
+                                            std::pair<QString, QString>("CS_S", ":/images/dlgicon/CSB_S.PNG"),
                                             std::pair<QString, QString>("GZ_S", ":/images/dlgicon/GZ_S.PNG"),
                                             std::pair<QString, QString>("HY_S", ":/images/dlgicon/HY_S.PNG"),
                                             std::pair<QString, QString>("KQ_S", ":/images/dlgicon/KQ_S.PNG"),
                                             std::pair<QString, QString>("BZ_S", ":/images/dlgicon/BZ_S.PNG"),
                                             std::pair<QString, QString>("SY_S", ":/images/dlgicon/SY_S.PNG"),
-                                            std::pair<QString, QString>("WSD_S", ":/images/dlgicon/WSD_S.PNG"),
+                                            std::pair<QString, QString>("WD_S", ":/images/dlgicon/WSD_S.PNG"),
                                             std::pair<QString, QString>("XJ_S", ":/images/dlgicon/XJ_S.PNG")});
 #endif // MODELPROPERTYDATA_H

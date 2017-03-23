@@ -39,6 +39,8 @@ public:
     enum InsertItemType{Polygon, Ellipse = 100};
     explicit GraphicWidget(QWidget *parent = 0);
     ~GraphicWidget();
+    MyGraphicsScene* getScene() const{return scene;}
+    QMenu * getItemMenu() const{return itemMenu;}
 
 private:
     void createToolBox();

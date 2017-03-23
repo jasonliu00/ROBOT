@@ -3,7 +3,7 @@
 # Project created by QtCreator 2016-12-22T14:43:48
 #
 #-------------------------------------------------
-
+#LIBS     += User32.LIB
 QT       += core gui
 QT       += sql
 

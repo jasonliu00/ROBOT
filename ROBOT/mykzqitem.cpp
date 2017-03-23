@@ -305,3 +305,55 @@ void MyKZQItem::propertySettingInit()
     panduanDialogData.tj2_operator = "==";
     panduanDialogData.tj2_logicVersusTj1 = "与";
 }
+
+QDataStream &operator<<(QDataStream &out, const MyKZQItem &kzqItem)
+{
+    MyKZQItem::KZQType kzqtype = kzqItem.kzqType();
+    out << kzqItem.getName() << kzqItem.pos() << kzqItem.zValue();
+    switch(kzqtype){
+        case MyKZQItem::Panduan:{
+            PdData data;
+            data.setData(kzqItem.pdDlgData());
+            out << data.tj1_compareContent << data.tj1_operator
+                << data.tj1_variableName << data.tj2_compareContent
+                << data.tj2_isEnable << data.tj2_logicVersusTj1
+                << data.tj2_operator << data.tj2_variableName;
+            break;
+        }
+        default:break;
+    }
+
+//    out << kzqItem.arrows.count();
+//    foreach(Arrow arrow, kzqItem.arrows)
+//        out << arrow;
+
+    return out;
+}
+
+
+QDataStream &operator>>(QDataStream &in, MyKZQItem &kzqItem)
+{
+    QString name;
+    QPointF position;
+    double z;
+    MyKZQItem::KZQType kzqtype = kzqItem.kzqType();
+    in >> name >> position >> z;
+
+    switch(kzqtype){
+        case MyKZQItem::Panduan:{
+            PdData data;
+            in >> data.tj1_compareContent >> data.tj1_operator
+               >> data.tj1_variableName >> data.tj2_compareContent
+               >> data.tj2_isEnable >> data.tj2_logicVersusTj1
+               >> data.tj2_operator >> data.tj2_variableName;
+            kzqItem.setPdDlgData(data);
+            break;
+        }
+        default:break;
+    }
+    kzqItem.setName(name);
+    kzqItem.setPos(position);
+    kzqItem.setZValue(z);
+//    kzqItem.setKZQType(type);
+    return in;
+}

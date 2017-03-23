@@ -16,6 +16,8 @@ Arrow::Arrow(ModelGraphicsItem *startItem, ModelGraphicsItem *endItem,
              QPointF startPoint, QPointF endPoint, QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
 {
+    startItemNameInDB = startItem->getName();
+    endItemNameInDB = endItem->getName();
     notfirsttimedraw = false;
     lineStartPoint = startPoint;
     lineEndPoint = endPoint;
@@ -31,11 +33,16 @@ Arrow::Arrow(ModelGraphicsItem *startItem, ModelGraphicsItem *endItem,
 QRectF Arrow::boundingRect() const
 {
     qreal extra = (pen().width() + 20) / 2.0;
-
     return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
                                       line().p2().y() - line().p1().y()))
         .normalized()
         .adjusted(-extra, -extra, extra, extra);
+
+//    qDebug() << myPolyline.boundingRect();
+//    return myPolyline.boundingRect()
+//        .normalized()
+//        .adjusted(-extra, -extra, extra, extra);
+
 
 }
 //! [1]
@@ -80,15 +87,23 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         lineStartPoint = vector.at(1);
     QPointF endPoint = myEndItem->endPointToPaintArrow(lineEndPoint);
 //    qDebug() << "startPoint and endPoint are " << startPoint << endPoint;
+    QPolygonF polyline;
     qreal endX = endPoint.x();
     qreal startX = startPoint.x();
     qreal endY = endPoint.y();
     qreal startY = startPoint.y();
     qreal y = endY - (endY-startY)/3;
-
-    QPolygonF polyline;
-    polyline << endPoint << QPointF(endX, y)
+    if(endY < startY){
+        polyline << startPoint << QPointF(startX, startY + 30)
+                 << QPointF(startX - (startX - endX)/2, startY + 30)
+                 << QPointF(startX - (startX - endX)/2, endY - 30)
+                 << QPointF(endX, endY - 30) << endPoint;
+        prepareGeometryChange();
+        setLine(startX, startY + 30, endX, endY - 30);
+    }else
+        polyline << endPoint << QPointF(endX, y)
              << QPointF(startX, y) << startPoint;
+//    qDebug() << polyline;
     myPolyline.clear();
     foreach(QPointF point, polyline){
         myPolyline << point;
@@ -137,6 +152,27 @@ QPolygonF Arrow::computePolygon() const
             << points[1] + QPointF(-offset, offset) << points[0] + QPointF(-offset, 0);
     return polygon;
 
+}
+
+QDataStream &operator<<(QDataStream &out, const Arrow &arrow)
+{
+    out << arrow.pos() << arrow.zValue()
+        << arrow.getStartPoint() << arrow.getEndPoint();
+    return out;
+}
+
+
+QDataStream &operator>>(QDataStream &in, Arrow &arrow)
+{
+    QPointF position, startpoint, endpoint;
+    double z;
+    in >> position >> z
+       >> startpoint >> endpoint;
+    arrow.setPos(position);
+    arrow.setLineStartPoint(startpoint);
+    arrow.setLineEndPoint(endpoint);
+    arrow.setZValue(z);
+    return in;
 }
 
 //! [7]

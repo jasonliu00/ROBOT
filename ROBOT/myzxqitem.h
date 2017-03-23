@@ -20,11 +20,22 @@ public:
     int type() const Q_DECL_OVERRIDE { return Type;}
     ZXQType zxqType() const{return myZXQType;}
     bool hoverState() const{return isHover;}
-
+    void setZXQType(ZXQType &type) {myZXQType = type;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
-    MStartData data(){return MStart_Setting;}
+    MStartData mstartData() const{return MStart_Setting;}
+    MStopData mstopData() const{return MStop_Setting;}
+    RingData ringData() const{return ringsetting;}
+    double delayData() const{return delaytime;}
+    bool lightData() const{return lightstate;}
+    QString showData() const{return showstring;}
+    void setMStartData(MStartData &data) {MStart_Setting.setData(data);}
+    void setMStopData(MStopData &data) {MStop_Setting.setData(data);}
+    void setRingData(RingData &data) {ringsetting.setData(data);}
+    void setDelayData(double &data) {delaytime = data;}
+    void setLightData(bool &data) {lightstate = data;}
+    void setShowData(QString &data) {showstring = data;}
 //    void setData(MStartData data);
 
 protected:
@@ -75,6 +86,7 @@ private:
     void propertySettingInit();
 };
 
-
+QDataStream &operator<<(QDataStream &out, const MyZXQItem &zxqItem);
+QDataStream &operator>>(QDataStream &in, MyZXQItem &zxqItem);
 
 #endif // MYZXQITEM_H

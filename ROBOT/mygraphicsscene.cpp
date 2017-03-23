@@ -53,8 +53,8 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case InsertCGQItem:{
             QSqlQuery query;
             cgqItem = new MyCGQItem(myItemMenu, cgqtype);
-            //enum CGQType{GZ_S = 0, WSD_S, BZ_S, SY_S, AN_S,
-            //COUNTER_S, HY_S, CSB_S, XJ_S, KQ_S, ZL_S};
+            //enum CGQType{GZ_S = 0, WD_S, BZ_S, SY_S, AN_S,
+            //JS_S, HY_S, CS_S, XJ_S, KQ_S, ZL_S};
             switch(cgqtype){
             case MyCGQItem::GZ_S:
                 query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'GZ_S';");
@@ -72,17 +72,17 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     break;
                 }
                 break;
-            case MyCGQItem::WSD_S:
+            case MyCGQItem::WD_S:
                 query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'WSD_S';");
                 query.next();
                 if(query.value(0).toInt() == 0){
                     query.exec("INSERT INTO sensorvariable(name)"
-                               "VALUES('WSD_S');");
+                               "VALUES('WD_S');");
                     addItem(cgqItem);
                     cgqItem->setPos(mouseEvent->scenePos());
                     emit cgqItemInserted(cgqItem);
                 }else{
-                    QMessageBox::warning(nullptr, tr("warning"), tr("温湿度传感器模块已经存在！"));
+                    QMessageBox::warning(nullptr, tr("warning"), tr("温度传感器模块已经存在！"));
                     emit cgqItemInserted(cgqItem);
                     delete cgqItem;
                     break;
@@ -136,17 +136,17 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     break;
                 }
                 break;
-            case MyCGQItem::COUNTER_S:
+            case MyCGQItem::DH_S:
                 query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'COUNTER_S';");
                 query.next();
                 if(query.value(0).toInt() == 0){
                     query.exec("INSERT INTO sensorvariable(name)"
-                               "VALUES('COUNTER_S');");
+                               "VALUES('DH_S');");
                     addItem(cgqItem);
                     cgqItem->setPos(mouseEvent->scenePos());
                     emit cgqItemInserted(cgqItem);
                 }else{
-                    QMessageBox::warning(nullptr, tr("warning"), tr("计数模块已经存在！"));
+                    QMessageBox::warning(nullptr, tr("warning"), tr("湿度检测模块已经存在！"));
                     emit cgqItemInserted(cgqItem);
                     delete cgqItem;
                     break;
@@ -168,12 +168,12 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     break;
                 }
                 break;
-            case MyCGQItem::CSB_S:
+            case MyCGQItem::CS_S:
                 query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'CSB_S';");
                 query.next();
                 if(query.value(0).toInt() == 0){
                     query.exec("INSERT INTO sensorvariable(name)"
-                               "VALUES('CSB_S');");
+                               "VALUES('CS_S');");
                     addItem(cgqItem);
                     cgqItem->setPos(mouseEvent->scenePos());
                     emit cgqItemInserted(cgqItem);
@@ -300,10 +300,10 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     addItem(kzqItem);
                     kzqItem->setPos(mouseEvent->scenePos());
                     emit kzqItemInserted(kzqItem);
-                    this->setBegainModelState(true);
-                    kzqItem->setName("JS");
+                    this->setEndModelState(true);
+                    kzqItem->setName("J_S_");
                     if(!query.exec("INSERT INTO property(type, name, out0, out1, content)"
-                                   "VALUES('JS', 'JS', NULL, NULL, NULL);")){
+                                   "VALUES('JS', 'J_S_', NULL, NULL, NULL);")){
                         qDebug() << "Insert JS module query failed\n"
                                  << query.lastError().text();
                     }
@@ -472,13 +472,4 @@ void MyGraphicsScene::setPolygonItemType(MyGraphicsPolygonItem::PolygonType type
     myPolygonItemType = type;
 }
 
-//void MyGraphicsScene::readyToDrawLine()
-//{
-//    insertLine = true;
-//    line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
-//                                mouseEvent->scenePos()));
-//    line->setPen(QPen(Qt::black, 1, Qt::DotLine,
-//                      Qt::SquareCap, Qt::MiterJoin));
-//    addItem(line);
-//}
 
