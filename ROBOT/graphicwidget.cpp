@@ -259,11 +259,11 @@ void GraphicWidget::deleteItem()
             else if(item->type() == MyKZQItem::Type){
                  MyKZQItem *tmp = qgraphicsitem_cast<MyKZQItem *>(item);
                  tmp->removeArrows();
-                 MyKZQItem::KZQType t = tmp->kzqType();
-                 if(t == MyKZQItem::Begain)
-                     scene->setBegainModelState(false);
-                 else if(t == MyKZQItem::End)
-                     scene->setEndModelState(false);
+//                 MyKZQItem::KZQType t = tmp->kzqType();
+//                 if(t == MyKZQItem::Begain)
+//                     scene->setBegainModelState(false);
+//                 else if(t == MyKZQItem::End)
+//                     scene->setEndModelState(false);
              }
              scene->removeItem(item);
              QString modulename = ((ModelGraphicsItem*)item)->getName();

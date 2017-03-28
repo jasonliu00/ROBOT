@@ -22,10 +22,10 @@ public:
     void setCGQType(MyCGQItem::CGQType type){cgqtype = type;}
     void setKZQType(MyKZQItem::KZQType type){kzqtype = type;}
     void setInsertLine(){insertLine = true;}
-    void setBegainModelState(bool state){begainModelExist = state;}
-    void setEndModelState(bool state){endModelExist = state;}
-    bool isBegainModelExist() const{return begainModelExist;}
-    bool isEndModelExist() const{return endModelExist;}
+//    void setBegainModelState(bool state){begainModelExist = state;}
+//    void setEndModelState(bool state){endModelExist = state;}
+//    bool isBegainModelExist() const{return begainModelExist;}
+//    bool isEndModelExist() const{return endModelExist;}
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) Q_DECL_OVERRIDE;
@@ -51,8 +51,8 @@ private:
     QPointF mousePressPos;
     QPointF mouseReleasePos;
 
-    bool begainModelExist; //表征开始、结束模块是否已经唯一存在
-    bool endModelExist;
+//    bool begainModelExist; //表征开始、结束模块是否已经唯一存在
+//    bool endModelExist;
 signals:
     void polygonItemInserted(MyGraphicsPolygonItem *item);
     void ellipseItemInserted(MyGraphicsEllipseItem *item);

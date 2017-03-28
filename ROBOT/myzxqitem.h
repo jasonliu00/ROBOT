@@ -22,18 +22,19 @@ public:
     bool hoverState() const{return isHover;}
     void setZXQType(ZXQType &type) {myZXQType = type;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
+    QPointF startPointToPaintArrow(QPointF &point);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
     MStartData mstartData() const{return MStart_Setting;}
     MStopData mstopData() const{return MStop_Setting;}
     RingData ringData() const{return ringsetting;}
-    double delayData() const{return delaytime;}
+    int delayData() const{return delaytime;}
     bool lightData() const{return lightstate;}
     QString showData() const{return showstring;}
     void setMStartData(MStartData &data) {MStart_Setting.setData(data);}
     void setMStopData(MStopData &data) {MStop_Setting.setData(data);}
     void setRingData(RingData &data) {ringsetting.setData(data);}
-    void setDelayData(double &data) {delaytime = data;}
+    void setDelayData(int &data) {delaytime = data;}
     void setLightData(bool &data) {lightstate = data;}
     void setShowData(QString &data) {showstring = data;}
 //    void setData(MStartData data);
@@ -76,7 +77,7 @@ private:
     MStartData MStart_Setting;   //马达启动对话框数据
     MStopData MStop_Setting;     //马达停止对话框数据
     RingData ringsetting;        //蜂鸣器对话框数据
-    double delaytime;            //延时对话框数据
+    int delaytime;            //延时对话框数据
     bool lightstate;             //指示灯数据
     QString showstring;          //显示对话框数据
 

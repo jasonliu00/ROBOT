@@ -70,6 +70,7 @@ void RingDialog::dialogInit()
     if(ringsetting.yinfuID != -1)
         yinfuButtonGroup->button(ringsetting.yinfuID)->setChecked(true);
     ui->timeLineEdit->setText(QString::number(ringsetting.yinfuTime, 'f', 4));
+//    ui->timeLineEdit->setEnabled(false);   //暂时不开放用户自定义时间
     yinpinButtonGroup->button(ringsetting.yinpinID)->setChecked(true);
     ui->yinpinLineEdit->setText(QString::number(yinpin[ringsetting.yinpinID], 'f', 1));
 
@@ -99,8 +100,8 @@ void RingDialog::okButtonClicked()
        if(!ok){
            QMessageBox::warning(this, tr("ringdialog"), tr("时间必须是数字"));
            return;
-       }else if(time > 100.0 || time < 0.0){
-           QMessageBox::warning(this, tr("ringdialog"), tr("时间的范围为0-100"));
+       }else if(time > 10.0 || time < 0.0){
+           QMessageBox::warning(this, tr("ringdialog"), tr("时间的范围为0-10"));
            return;
        }
        ringsetting.yinfuTime = time;

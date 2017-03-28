@@ -12,8 +12,8 @@
 MyGraphicsScene::MyGraphicsScene(QMenu *menu, QObject *parent)
     :QGraphicsScene(parent)
 {
-    begainModelExist = false;
-    endModelExist = false;
+//    begainModelExist = false;
+//    endModelExist = false;
     mouseDown = false;
     insertLine = false;
     line = nullptr;
@@ -274,15 +274,20 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
         case InsertKZQItem:{
             if(kzqtype == MyKZQItem::Begain){
-                if(this->isBegainModelExist()){
+                query.exec("SELECT type FROM property WHERE type = 'CSH';");
+                if(query.next()){
+                    QMessageBox::warning(nullptr, tr("warning"), tr("开始模块只允许存在一个！"));
+                    break;
+                }
+/*                if(this->isBegainModelExist()){
                     QMessageBox::warning(nullptr, tr("warning"), tr("开始模块只允许存在一个！！！"));
                     break;
-                }else{
+                }*/else{
                     kzqItem = new MyKZQItem(myItemMenu, kzqtype);
                     addItem(kzqItem);
                     kzqItem->setPos(mouseEvent->scenePos());
                     emit kzqItemInserted(kzqItem);
-                    this->setBegainModelState(true);
+//                    this->setBegainModelState(true);
                     kzqItem->setName("CSH");
                     if(!query.exec("INSERT INTO property(type, name, out0, out1, content)"
                                "VALUES('CSH', 'CSH', NULL, NULL, NULL);")){
@@ -291,16 +296,21 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     }
                 }
             }
-            if(kzqtype == MyKZQItem::End){
-                if(this->isEndModelExist()){
+            if(kzqtype == MyKZQItem::End){               
+/*                if(this->isEndModelExist()){
                     QMessageBox::warning(nullptr, tr("warning"), tr("结束模块只允许有一个"));
+                    break;
+                }*/
+                query.exec("SELECT type FROM property WHERE type = 'JS'';");
+                if(query.next()){
+                    QMessageBox::warning(nullptr, tr("warning"), tr("结束模块只允许存在一个！"));
                     break;
                 }else{
                     kzqItem = new MyKZQItem(myItemMenu, kzqtype);
                     addItem(kzqItem);
                     kzqItem->setPos(mouseEvent->scenePos());
                     emit kzqItemInserted(kzqItem);
-                    this->setEndModelState(true);
+//                    this->setEndModelState(true);
                     kzqItem->setName("J_S_");
                     if(!query.exec("INSERT INTO property(type, name, out0, out1, content)"
                                    "VALUES('JS', 'J_S_', NULL, NULL, NULL);")){
@@ -389,7 +399,9 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             startItems.first() != endItems.first()) {
             ModelGraphicsItem *startItem = dynamic_cast<ModelGraphicsItem*>(startItems.first());
             ModelGraphicsItem *endItem = dynamic_cast<ModelGraphicsItem*>(endItems.first());
-            Arrow *arrow = new Arrow(startItem, endItem, mousePressPos, mouseReleasePos);
+//            QPointF startpoint =
+            Arrow *arrow = new Arrow(startItem, endItem,
+                                     mousePressPos, mouseReleasePos);
             arrow->setColor(Qt::black);
             startItem->addArrow(arrow);
             endItem->addArrow(arrow);

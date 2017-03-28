@@ -12,7 +12,11 @@ struct pdModelOutArea{
     QRectF YStartArea;
     QRectF NStartArea;
 };
-
+const QPointF begainStartPoint = QPointF(0, 20);
+const QPointF endEndPoint = QPointF(0, -20);
+const QPointF panduanEndPoint = QPointF(0, -30);
+const QPointF panduanYStartPoint = QPointF(0, 30);
+const QPointF panduanNStartPoint = QPointF(50, 0);
 class MyKZQItem : public ModelGraphicsItem  //两个public都需要
 {
     Q_OBJECT
@@ -29,6 +33,7 @@ public:
     void setKZQType(KZQType &type) {myKZQType = type;}
     bool hoverState() const{return isHover;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
+    QPointF startPointToPaintArrow(QPointF &point);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
     pdModelOutArea getPdModelOutArea() const{return myPdModelOutArea;}

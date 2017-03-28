@@ -1,5 +1,6 @@
 #include "robotmainwindow.h"
 #include <QApplication>
+#include <QCoreApplication>
 #include <QSqlDatabase>
 #include <QSqlError>
 
@@ -21,11 +22,17 @@ bool createConnection()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    //为移植mysql程序所用
+    QString strLibPath(QDir::toNativeSeparators(QApplication::applicationDirPath())
+                       +QDir::separator()+"plugins");
+    QCoreApplication::addLibraryPath(strLibPath);
+
     if(!createConnection())
         return 1;
     RobotMainWindow w;
-    w.setWindowIcon(QIcon(":/images/title"));
+    w.setWindowIcon(QIcon(":/images/VC1.0.png"));
     w.show();
 
     return a.exec();
 }
+

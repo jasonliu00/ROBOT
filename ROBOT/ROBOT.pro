@@ -11,7 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ROBOT
 TEMPLATE = app
-
+OTHER_FILES += roboticon.rc
+RC_FILE = roboticon.rc
 
 SOURCES += main.cpp\
         robotmainwindow.cpp \
@@ -70,3 +71,8 @@ FORMS    += robotmainwindow.ui \
 
 RESOURCES += \
     robotimages.qrc
+
+DISTFILES += \
+    roboticon.rc
+
+

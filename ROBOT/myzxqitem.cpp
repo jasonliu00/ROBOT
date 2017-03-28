@@ -67,6 +67,12 @@ QVector<QPointF> MyZXQItem::startPointToPaintArrow(QPointF &point, bool notfirst
     return mapToScene(startpoints);
 }
 
+QPointF MyZXQItem::startPointToPaintArrow(QPointF &point)
+{
+    Q_UNUSED(point);
+    return mapToScene(startPoint);
+}
+
 void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
@@ -287,7 +293,8 @@ void MyZXQItem::showPropertyDlg()
             if(dlg.exec()){
                 ringsetting = dlg.data();
                 QString strcontent = QString("BEEP(%1, %2);")
-                        .arg(ringsetting.yinfuTime, 0, 'f', 4)   //4代表精度，即小数点之后4位保留
+                        .arg(ringsetting.yinfuTime*10000)    //乘以10000是为了将小数转化为整数，方便下位机解析
+//                        .arg(ringsetting.yinfuTime, 0, 'f', 4)   //4代表精度，即小数点之后4位保留
                         .arg(yinpin[ringsetting.yinpinID], 0, 'f', 1);
                 query.prepare("UPDATE property "
                               "SET content = :content "
@@ -374,7 +381,7 @@ void MyZXQItem::propertySettingInit()
     for(int i = 0; i < 4; i++){
         MStop_Setting.motorChecked[i] = true;
     }
-    delaytime = 0.5;
+    delaytime = 10;
     lightstate = true;
 
     ringsetting.yinfuID = -1;//-1代表哪个按钮都不选中
@@ -477,7 +484,7 @@ QDataStream &operator>>(QDataStream &in, MyZXQItem &zxqItem)
             break;
         }
         case MyZXQItem::Delay:{
-            double delaytime;
+            int delaytime;
             in >> delaytime;
             zxqItem.setDelayData(delaytime);
             break;

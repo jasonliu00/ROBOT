@@ -12,16 +12,16 @@ class DelayDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DelayDialog(double time,QWidget *parent = 0);
+    explicit DelayDialog(int time,QWidget *parent = 0);
     ~DelayDialog();
-    double data()const{return delaytime;}
+    int data()const{return delaytime;}
     void setData(double time){delaytime = time;}
 protected:
 //    void closeEvent(QCloseEvent *event);
 private:
     Ui::DelayDialog *ui;
 
-    double delaytime;
+    int delaytime;
     void dialogInit();
     void createConnection();
 private slots:

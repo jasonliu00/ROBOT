@@ -5,7 +5,9 @@
 #include "mygraphicsscene.h"
 #include "graphicwidget.h"
 #include "arrow.h"
-#include "windows.h"
+#include "windows.h"   //GetVolumeInformation 函数依赖的头文件
+#include "winbase.h"   //GetVolumeInformation 函数在win7下需要的头文件
+#include "fileapi.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QIODevice>
@@ -470,7 +472,7 @@ void RobotMainWindow::fileOpen()
         return;
     setWindowFilePath(filename);
     loadFile();
-    QString filepath = filename.left(filename.indexOf('.'));
+    QString filepath = filename.left(filename.lastIndexOf('.'));
     dbFileName = QString("%1.sql").arg(filepath);
     loadDB(dbFileName);
     if(QFile::exists(QString("%1.txt").arg(filepath)))
@@ -501,7 +503,7 @@ bool RobotMainWindow::fileSave()
     writeItems(out, scene->items());
     file.close();
     QString filepath = windowFilePath();
-    dbFileName = QString("%1.sql").arg(filepath.left(filepath.indexOf(('.'))));
+    dbFileName = QString("%1.sql").arg(filepath.left(filepath.lastIndexOf(('.'))));
     saveDB(dbFileName);
     setDirty(false);
     return true;
@@ -531,7 +533,7 @@ void RobotMainWindow::compellProgram()
     QSqlQuery query;
     QString out0;
     QString filepath = windowFilePath();
-    proFileName = QString("%1.txt").arg(filepath.left(filepath.indexOf('.')));
+    proFileName = QString("%1.txt").arg(filepath.left(filepath.lastIndexOf('.')));
 //    QFile file("e:/Robotprogram/demo.txt");
     QFile file(proFileName);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -558,10 +560,10 @@ void RobotMainWindow::compellProgram()
     }else{
         out0 = query.value(0).toString();
         in << "CSH:\n";
-        if(query.value(1).toString() == NULL)
-            in << "/\n";
-        else
-            in << query.value(1).toString();
+//        if(query.value(1).toString() == NULL)
+//            in << "/\n";
+//        else
+//            in << query.value(1).toString();
         in << "GOTO:" << out0 << ";\n";
     }
     /********遍历表**********/
@@ -587,14 +589,16 @@ void RobotMainWindow::compellProgram()
             in << "IF " << query.value(5).toString() << "\n";
             in << "GOTO:" << query.value(3).toString() << ";\n";
             if(query.value(4).toString() == NULL)
-                in << "ELSE GOTO:/\n";
+//                in << "ELSE GOTO:/\n";
+                in << "ELSE GOTO:;\n";
             else
                 in << "ELSE GOTO:" << query.value(4).toString() << ";\n";
         }
         else{
             QString contentstr = query.value(5).toString().replace(';', ";\n");
             if(contentstr == NULL)
-                in << "/\n";
+//                in << "/\n";
+                in << "";
             else if(contentstr.endsWith('\n'))
                 in << contentstr;
             else
@@ -616,17 +620,29 @@ bool RobotMainWindow::download()
     }
     QString filename = proFileName.right(proFileName.count() - proFileName.lastIndexOf('/') - 1);
     QFileInfoList dirinfolists = QDir::drives();
+    QString avaliablepath = "";
     foreach(QFileInfo dirinfo, dirinfolists){
         QString path = dirinfo.absoluteDir().path();
+        avaliablepath += path;
+        if(DRIVE_REMOVABLE != GetDriveType((WCHAR *)path.utf16())) //如果设备是可移动磁盘，判断名字是否为ROBOT
+        {
+            continue;
+        }
         WCHAR szVolumeName[256];
-        WCHAR szFileSystemName[256];
-        DWORD dwSerialNumber = 0;
-        DWORD dwMaxFileNameLength = 256;
-        DWORD dwFileSystemFlags = 0;
-        bool ret = GetVolumeInformation((WCHAR *)path.utf16(), szVolumeName, 256, &dwSerialNumber,
-                             &dwMaxFileNameLength, &dwFileSystemFlags, szFileSystemName, 256);
+//        WCHAR szFileSystemName[256];
+//        DWORD dwSerialNumber = 0;
+//        DWORD dwMaxFileNameLength = 256;
+//        DWORD dwFileSystemFlags = 0;
+//        bool ret = GetVolumeInformation((WCHAR *)path.utf16(), szVolumeName, 256, &dwSerialNumber,
+//                             &dwMaxFileNameLength, &dwFileSystemFlags, szFileSystemName, 256);
+        bool ret = GetVolumeInformation((WCHAR *)path.utf16(), szVolumeName, 256, NULL,
+                             NULL, NULL, NULL, 0);
         if(!ret){
-            QMessageBox::critical(this, tr("error"), tr("磁盘搜索时发生错误"));
+            DWORD errorMessage = GetLastError();
+            QString str = QString("磁盘搜索时发生错误, 错误代码：%1, 已搜索到磁盘：%2")
+                    .arg(errorMessage)
+                    .arg(avaliablepath);
+            QMessageBox::critical(this, tr("error"), str);
             return false;
         }
         QString name = QString::fromUtf16((const ushort*)szVolumeName);
@@ -634,7 +650,7 @@ bool RobotMainWindow::download()
 //        qDebug() << name << "\n";
 //        qDebug() << path;
         if(name == "ROBOT"){
-            QString serialnum = QString("%1").arg(dwSerialNumber);
+//            QString serialnum = QString("%1").arg(dwSerialNumber);
             toDir = path + filename;
             qDebug() << toDir;
             break;

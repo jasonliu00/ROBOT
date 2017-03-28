@@ -3,7 +3,7 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
-DelayDialog::DelayDialog(double time, QWidget *parent) :
+DelayDialog::DelayDialog(int time, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DelayDialog)
 {
@@ -33,7 +33,7 @@ void DelayDialog::dialogInit()
     ui->pictureLabel->resize(pixmap.size());
     ui->pictureLabel->setPixmap(pixmap);
 
-    ui->lineEdit->setText(QString("%1").arg(delaytime, 0, 'f', 3));
+    ui->lineEdit->setText(QString("%1").arg(delaytime));
 }
 
 void DelayDialog::createConnection()
@@ -46,12 +46,12 @@ void DelayDialog::okButtonClicked()
 {
     QString str = ui->lineEdit->text();
     bool ok;
-    double time = str.toDouble(&ok);
+    int time = str.toInt(&ok);
     if(!ok){
-        QMessageBox::warning(this, tr("delayDialog"), tr("请输入数字"));
+        QMessageBox::warning(this, tr("delayDialog"), tr("请输入整数"));
         return;
-    }else if(time > 100.0 || time < 0.0){
-        QMessageBox::warning(this, tr("delayDialog"), tr("请输入0-100以内的数字"));
+    }else if(time > 100 || time < 0){
+        QMessageBox::warning(this, tr("delayDialog"), tr("请输入0-100以内的整数"));
         return;
     }else{
         setData(time);

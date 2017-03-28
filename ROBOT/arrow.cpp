@@ -82,9 +82,11 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     painter->setPen(myPen);
     painter->setBrush(myColor);
     QVector<QPointF> vector = myStartItem->startPointToPaintArrow(lineStartPoint, notfirsttimedraw);
+//    QPointF startPoint = myStartItem->startPointToPaintArrow(lineStartPoint);
     QPointF startPoint = vector.at(0);
     if(vector.count() > 1)
         lineStartPoint = vector.at(1);
+//    lineStartPoint = startPoint;
     QPointF endPoint = myEndItem->endPointToPaintArrow(lineEndPoint);
 //    qDebug() << "startPoint and endPoint are " << startPoint << endPoint;
     QPolygonF polyline;
