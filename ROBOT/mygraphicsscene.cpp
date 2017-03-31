@@ -53,8 +53,6 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case InsertCGQItem:{
             QSqlQuery query;
             cgqItem = new MyCGQItem(myItemMenu, cgqtype);
-            //enum CGQType{GZ_S = 0, WD_S, BZ_S, SY_S, AN_S,
-            //JS_S, HY_S, CS_S, XJ_S, KQ_S, ZL_S};
             switch(cgqtype){
             case MyCGQItem::GZ_S:
                 query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'GZ_S';");
@@ -137,7 +135,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 }
                 break;
             case MyCGQItem::DH_S:
-                query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'COUNTER_S';");
+                query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'DH_S';");
                 query.next();
                 if(query.value(0).toInt() == 0){
                     query.exec("INSERT INTO sensorvariable(name)"
@@ -169,7 +167,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 }
                 break;
             case MyCGQItem::CS_S:
-                query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'CSB_S';");
+                query.exec("SELECT COUNT(name) FROM sensorvariable WHERE name = 'CS_S';");
                 query.next();
                 if(query.value(0).toInt() == 0){
                     query.exec("INSERT INTO sensorvariable(name)"
@@ -238,22 +236,37 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     }
         case InsertZXQItem:{
+            int name_count;
             zxqItem = new MyZXQItem(myItemMenu, zxqtype);
             addItem(zxqItem);
-//            connect(zxqItem, SIGNAL(readyToDrawLine()),
-//                    this, SLOT(readyToDrawLine()));
             zxqItem->setPos(mouseEvent->scenePos());
 
             /******每添加一个模块就将信息记录到property表中********/
-            if(!query.exec("SELECT COUNT(name) AS name_count FROM property WHERE type = 'YJ';")){
-                QMessageBox::warning(NULL, "Query Error", "An Error has happened when compute the name_count");
+//            if(!query.exec("SELECT COUNT(name) AS name_count FROM property WHERE type = 'YJ';")){
+//                QMessageBox::warning(NULL, "Query Error", "An Error has happened when compute the name_count");
+//                return;
+//            }
+//            query.next();
+//            int name_count = query.value("name_count").toInt();
+            //itemcount 表的num字段记录了每种类型模块已添加的数量，方便为YJ_命名；
+            if(!query.exec("SELECT num FROM itemcount WHERE type = 'YJ';")){
+                QMessageBox::warning(NULL, "Query Error", "An Error occured when check the itemcount table's type = 'YJ' record");
                 return;
+            }else{
+                if(query.next()){
+                    name_count = query.value(0).toInt();
+                    query.prepare("UPDATE itemcount SET num = :num WHERE type = 'YJ';");
+                    query.addBindValue(name_count+1);
+                    query.exec();
+                }else{
+                    query.exec("INSERT INTO itemcount(type, num) VALUES('YJ', 1);");
+                    name_count = 0;
+                }
+
             }
-            query.next();
-            int name_count = query.value("name_count").toInt();
             QString myname = "YJ_" + QString().number(name_count);
             zxqItem->setName(myname);        //将模块名字保存起来
-            qDebug() << "zxqItem name is " << zxqItem->getName();
+//            qDebug() << "zxqItem name is " << zxqItem->getName();
             query.prepare("INSERT INTO property(type,"
                        "name,"
                        "out0,"
@@ -301,7 +314,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     QMessageBox::warning(nullptr, tr("warning"), tr("结束模块只允许有一个"));
                     break;
                 }*/
-                query.exec("SELECT type FROM property WHERE type = 'JS'';");
+                query.exec("SELECT type FROM property WHERE type = 'JS';");
                 if(query.next()){
                     QMessageBox::warning(nullptr, tr("warning"), tr("结束模块只允许存在一个！"));
                     break;
@@ -324,12 +337,28 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 addItem(kzqItem);
                 kzqItem->setPos(mouseEvent->scenePos());
                 emit kzqItemInserted(kzqItem);
-                if(!query.exec("SELECT COUNT(name) AS name_count FROM property WHERE type = 'PD';")){
-                    QMessageBox::warning(NULL, "Query Error", "An Error has happened when compute the name_count");
+//                if(!query.exec("SELECT COUNT(name) AS name_count FROM property WHERE type = 'PD';")){
+//                    QMessageBox::warning(NULL, "Query Error", "An Error has happened when compute the name_count");
+//                    return;
+//                }
+//                query.next();
+                int name_count;
+                if(!query.exec("SELECT num FROM itemcount WHERE type = 'PD';")){
+                    QMessageBox::warning(NULL, "Query Error", "An Error occured when check the itemcount table's type = 'PD' record");
                     return;
+                }else{
+                    if(query.next()){
+                        name_count = query.value(0).toInt();
+                        query.prepare("UPDATE itemcount SET num = :num WHERE type = 'PD';");
+                        query.addBindValue(name_count+1);
+                        query.exec();
+                    }else{
+                        query.exec("INSERT INTO itemcount(type, num) VALUES('PD', 1);");
+                        name_count = 0;
+                    }
+
                 }
-                query.next();
-                int name_count = query.value("name_count").toInt();
+//                int name_count = query.value("name_count").toInt();
                 QString myname = "PD_" + QString().number(name_count);
                 kzqItem->setName(myname);        //将模块名字保存起来
                 query.prepare("INSERT INTO property(type,"
@@ -457,7 +486,7 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 query.prepare("UPDATE property "   //语句之间注意空格，否则会发生语法错误导致，query失败
                               "SET out0 = :end_item "
                               "WHERE name = :start_item;");
-                qDebug() << "the endItem and startItem names are " << endItem->getName() << startItem->getName();
+//                qDebug() << "the endItem and startItem names are " << endItem->getName() << startItem->getName();
                 query.addBindValue(endItem->getName());
                 query.addBindValue(startItem->getName());
                 if(!query.exec()){

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QMap>
 
+class QComboBox;
 namespace Ui {
 class PanduanDialog;
 }
@@ -24,10 +25,14 @@ private:
 //    void sensorIconInit();
     void dialogInit();
     void createConnection();
+    void setDialogOperatorRull(QString &type, QComboBox *comboBox);
+    bool isCompareConditionValide(QString &type, QString &condition);
 private slots:
     void checkBoxClicked(bool ischecked);
     void okButtonClicked();
     void cancelButtonClicked();
+    void variable1Changed(QString name);
+    void variable2Changed(QString name);
 };
 
 #endif // PANDUANDIALOG_H

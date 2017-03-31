@@ -30,7 +30,7 @@ RobotMainWindow::RobotMainWindow(QWidget *parent) :
     createToolbars();
     GraphicWidget *widget = new GraphicWidget(this);
     setCentralWidget(widget);
-    setWindowTitle(tr("ROBOT"));
+    setWindowTitle(tr("VC1.0"));
 
 }
 
@@ -41,26 +41,10 @@ RobotMainWindow::~RobotMainWindow()
 
 void RobotMainWindow::createActions()
 {
-//    toFrontAction = new QAction(QIcon(":/images/bringtofront.png"),
-//                                tr("Bring to &Front"), this);
-//    toFrontAction->setShortcut(tr("Ctrl+F"));
-//    toFrontAction->setStatusTip(tr("Bring item to front"));
-//    connect(toFrontAction, SIGNAL(triggered()), this, SLOT(bringToFront()));
-//! [23]
 
-//    sendBackAction = new QAction(QIcon(":/images/sendtoback.png"), tr("Send to &Back"), this);
-//    sendBackAction->setShortcut(tr("Ctrl+T"));
-//    sendBackAction->setStatusTip(tr("Send item to back"));
-//    connect(sendBackAction, SIGNAL(triggered()), this, SLOT(sendToBack()));
-
-    deleteAction = new QAction(QIcon(":/images/delete.png"), tr("&Delete"), this);
-    deleteAction->setShortcut(tr("Delete"));
-    deleteAction->setStatusTip(tr("Delete item from diagram"));
-//    connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
-
-    exitAction = new QAction(tr("E&xit"), this);
-    exitAction->setShortcuts(QKeySequence::Quit);
-    exitAction->setStatusTip(tr("Quit Scenediagram example"));
+//    exitAction = new QAction(tr("E&xit"), this);
+//    exitAction->setShortcuts(QKeySequence::Quit);
+//    exitAction->setStatusTip(tr("Quit Scenediagram example"));
 //    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     aboutAction = new QAction(tr("A&bout"), this);
@@ -87,8 +71,8 @@ void RobotMainWindow::createActions()
     saveAsAction->setStatusTip(tr("流程图另存为"));
     connect(saveAsAction, SIGNAL(triggered(bool)), this, SLOT(fileSaveAs()));
 
-    compellAction = new QAction(QIcon(":/images/compell.png"), tr("(&C)编译"),this);
-    compellAction->setShortcut(tr("Ctrl+C"));
+    compellAction = new QAction(QIcon(":/images/compell.png"), tr("(&P)编译"),this);
+    compellAction->setShortcut(tr("Ctrl+P"));
     compellAction->setStatusTip(tr("编译当前程序"));
     connect(compellAction, SIGNAL(triggered(bool)), this, SLOT(compellProgram()));
 
@@ -98,23 +82,16 @@ void RobotMainWindow::createActions()
     connect(downloadAction, SIGNAL(triggered(bool)), this, SLOT(download()));
 }
 
-//void RobotMainWindow::createToolBox()
-//{
-
-//}
-
 void RobotMainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&文件"));
-    fileMenu->addAction(exitAction);
+//    fileMenu->addAction(exitAction);
     fileMenu->addAction(openAction);
     fileMenu->addAction(newAction);
     fileMenu->addAction(saveAction);
     fileMenu->addAction(saveAsAction);
 
-    editMenu = menuBar()->addMenu(tr("&编辑"));
-    editMenu->addAction(deleteAction);
-    editMenu->addSeparator();
+    editMenu = menuBar()->addMenu(tr("&编译"));
     editMenu->addAction(compellAction);
     editMenu->addAction(downloadAction);
 
@@ -230,12 +207,16 @@ void RobotMainWindow::readItems(QDataStream &in, int offset, bool select)
         enditem->addArrow(arrow);
         arrow->setZValue(-1000.0);
         scene->addItem(arrow);
+        arrow->update();
         arrow->updatePosition();
     }
 //    if (select)
 //        selectItems(items);
 //    else
 //        selectionChanged();
+    //弥补一下碰到判断模块时连线出问题的bug
+    scene->update();
+    scene->update();
 }
 
 void RobotMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem *> &items)
@@ -319,6 +300,7 @@ void RobotMainWindow::saveDB(const QString &path)
     QStringList tables;
     tables.append("property");
     tables.append("sensorvariable");
+    tables.append("itemcount");
     foreach(QString table,tables)
     {
         QSqlQuery query;
@@ -407,7 +389,7 @@ void RobotMainWindow::loadDB(const QString &path)
     while(!in.atEnd())
     {
         QString sql=in.readLine();
-        qDebug() << sql << "\n";
+//        qDebug() << sql << "\n";
         if(!query.exec(sql)){
             qDebug() << query.lastError().text();
         }
@@ -458,7 +440,8 @@ void RobotMainWindow::clearDB()
 {
     QSqlQuery query;
     query.exec("DELETE FROM sensorvariable;"
-               "DELETE FROM property;");
+               "DELETE FROM property;"
+               "DELETE FROM itemcount;");
 }
 
 void RobotMainWindow::fileOpen()
@@ -576,7 +559,7 @@ void RobotMainWindow::compellProgram()
     while(query.next()){
         /***********判断有无结束模块***********/
         if(query.value(3).toString() == NULL && query.value(0).toString() != "JS"){
-            QMessageBox::warning(this, tr("warning"), tr("缺少结束模块，请连接结束模块！"));
+            QMessageBox::warning(this, tr("warning"), tr("请将未连接模块连接")/*tr("缺少结束模块，请连接结束模块！")*/);
             file.close();
             return;
         }
@@ -586,13 +569,13 @@ void RobotMainWindow::compellProgram()
             in << query.value(1).toString() << ":\n";
         /************单独处理判断模块**************/
         if(query.value(0).toString() == "PD"){
-            in << "IF " << query.value(5).toString() << "\n";
+            in << "IF" << query.value(5).toString() << "\n";
             in << "GOTO:" << query.value(3).toString() << ";\n";
             if(query.value(4).toString() == NULL)
-//                in << "ELSE GOTO:/\n";
-                in << "ELSE GOTO:;\n";
+//                in << "ELSE\nGOTO:/\n";
+                in << "ELSE\nGOTO:;\n";
             else
-                in << "ELSE GOTO:" << query.value(4).toString() << ";\n";
+                in << "ELSE\nGOTO:" << query.value(4).toString() << ";\n";
         }
         else{
             QString contentstr = query.value(5).toString().replace(';', ";\n");
@@ -652,7 +635,7 @@ bool RobotMainWindow::download()
         if(name == "ROBOT"){
 //            QString serialnum = QString("%1").arg(dwSerialNumber);
             toDir = path + filename;
-            qDebug() << toDir;
+//            qDebug() << toDir;
             break;
         }
     }
@@ -679,6 +662,6 @@ bool RobotMainWindow::download()
 
 void RobotMainWindow::about()
 {
-    QMessageBox::information(this, tr("关于程序"), tr("上海金步机械科技有限公司"),
+    QMessageBox::information(this, tr("关于VC1.0"), tr("VC1.0\n\n版权所有（C）1999-2017\n上海金步机械科技有限公司"),
                              QMessageBox::Cancel);
 }

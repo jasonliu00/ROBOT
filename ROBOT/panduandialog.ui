@@ -208,11 +208,6 @@
        <string>或</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>非</string>
-      </property>
-     </item>
     </widget>
    </widget>
   </widget>

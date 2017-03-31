@@ -46,13 +46,9 @@ private:
     void createToolBox();
     void createAction();
 
-//    QWidget *createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType, const QString &image);
     QWidget *createCGQCellWidget(const QString &text, MyCGQItem::CGQType cgqType, const QString &image);
-    QWidget *createZXQCellWidget(const QString &text, MyZXQItem::ZXQType zxqType, const QString &image);\
+    QWidget *createZXQCellWidget(const QString &text, MyZXQItem::ZXQType zxqType, const QString &image);
     QWidget *createKZQCellWidget(const QString &text, MyKZQItem::KZQType kzqType, const QString &image);
-//    QWidget *createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType);
-//    QWidget *createEllipseCellWidget(const QString &text, InsertItemType itemType);
-//    QWidget *createBackgroundCellWidget(const QString &text, const QString &image);
     Ui::GraphicWidget *ui;
     QToolBox *toolBox;
     MyGraphicsScene *scene;
@@ -64,21 +60,15 @@ private:
     InsertItemType myItemType;
 
     QAction *deleteAction;
-    QAction *propertyAction;
     QMenu *itemMenu;
 private slots:
     void cgqButtonGroupClicked(int id);
     void zxqButtonGroupClicked(int id);
     void kzqButtonGroupClicked(int id);
-//    void backgroundButtonGroupClicked(QAbstractButton *button);
-//    void polygonItemInserted(MyGraphicsPolygonItem *item);
-//    void ellipseItemInserted(MyGraphicsEllipseItem *item);
-//    void myItemInserted(MyGraphicsItem *item);
     void cgqItemInserted(MyCGQItem *item);
     void zxqItemInserted(MyZXQItem *item);
     void kzqItemInserted(MyKZQItem *item);
     void deleteItem();
-    void showPropertyDialog();
 };
 
 #endif // GRAPHICWIDGET_H

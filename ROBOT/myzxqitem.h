@@ -22,7 +22,7 @@ public:
     bool hoverState() const{return isHover;}
     void setZXQType(ZXQType &type) {myZXQType = type;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
-    QPointF startPointToPaintArrow(QPointF &point);
+//    QPointF startPointToPaintArrow(QPointF &point);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
     MStartData mstartData() const{return MStart_Setting;}

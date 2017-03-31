@@ -9,8 +9,8 @@ bool createConnection()
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("localhost");
     db.setDatabaseName("robot");
-    db.setUserName("liulizhao");
-    db.setPassword("910228");
+    db.setUserName("robotdb");
+    db.setPassword("000000");
     if(!db.open()){
         QMessageBox::critical(0, QObject::tr("Database Error"),
                               db.lastError().text());

@@ -33,7 +33,7 @@ public:
     void setKZQType(KZQType &type) {myKZQType = type;}
     bool hoverState() const{return isHover;}
     QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime);
-    QPointF startPointToPaintArrow(QPointF &point);
+//    QPointF startPointToPaintArrow(QPointF &point);
     QPointF endPointToPaintArrow(QPointF &point);
     int getChildType() const{return type();}
     pdModelOutArea getPdModelOutArea() const{return myPdModelOutArea;}

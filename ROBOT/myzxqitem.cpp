@@ -67,11 +67,11 @@ QVector<QPointF> MyZXQItem::startPointToPaintArrow(QPointF &point, bool notfirst
     return mapToScene(startpoints);
 }
 
-QPointF MyZXQItem::startPointToPaintArrow(QPointF &point)
-{
-    Q_UNUSED(point);
-    return mapToScene(startPoint);
-}
+//QPointF MyZXQItem::startPointToPaintArrow(QPointF &point)
+//{
+//    Q_UNUSED(point);
+//    return mapToScene(startPoint);
+//}
 
 void MyZXQItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
@@ -292,7 +292,7 @@ void MyZXQItem::showPropertyDlg()
             RingDialog dlg(ringsetting);
             if(dlg.exec()){
                 ringsetting = dlg.data();
-                QString strcontent = QString("BEEP(%1, %2);")
+                QString strcontent = QString("BEEP(%1,%2);")
                         .arg(ringsetting.yinfuTime*10000)    //乘以10000是为了将小数转化为整数，方便下位机解析
 //                        .arg(ringsetting.yinfuTime, 0, 'f', 4)   //4代表精度，即小数点之后4位保留
                         .arg(yinpin[ringsetting.yinpinID], 0, 'f', 1);
@@ -357,7 +357,7 @@ void MyZXQItem::drawOutArc(QPainter *painter)
 
 void MyZXQItem::createContextMenu()
 {
-    QAction *action;
+    QAction *action = nullptr;
     foreach(action, myContextMenu->actions()){
         if(action->text() == tr("&delete"))
             break;

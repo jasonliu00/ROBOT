@@ -20,6 +20,7 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
 {
 //    ui->setupUi(this);
     QSqlQuery query;
+    //记录属性信息
     bool result = query.exec("CREATE TABLE IF NOT EXISTS property"
                "("
                    "no	INT UNSIGNED NOT NULL AUTO_INCREMENT,"
@@ -36,6 +37,7 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
     qDebug() << "the Create property table query result is " << result;
     if(!result)
         qDebug() << query.lastError().text();
+    //记录传感器模块
     result = query.exec("CREATE TABLE IF NOT EXISTS sensorvariable"
                         "("
                             "no INT UNSIGNED NOT NULL AUTO_INCREMENT,"
@@ -44,10 +46,21 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
                             "PRIMARY KEY (name)"
                         ")ENGINE = InnoDB;");
     qDebug() << "the Create sensorvariable table query result is " << result;
+    //记录添加到界面中的模块数量，只增不减
+    result = query.exec("CREATE TABLE IF NOT EXISTS itemcount"
+                        "("
+                            "no    INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+                            "type  VARCHAR(20) NOT NULL,"
+                            "num   INT UNSIGNED NOT NULL DEFAULT 0,"
+                            "UNIQUE INDEX(no),"
+                            "PRIMARY KEY(type)"
+                        ")ENGINE = InnoDB;");
+    if(!result)
+        qDebug() << query.lastError().text();
+    qDebug() << "the Create itemcount table query result is " << result;
     createAction();
     itemMenu = new QMenu(tr("Item"));
     itemMenu->addAction(deleteAction);
-//    itemMenu->addAction(propertyAction);
     scene = new MyGraphicsScene(itemMenu, this);
     scene->setSceneRect(0, 0, 1000, 1000);
     createToolBox();
@@ -58,12 +71,6 @@ GraphicWidget::GraphicWidget(QWidget *parent) :
 
     setLayout(mainLayout);
 
-//    connect(scene, SIGNAL(ellipseItemInserted(MyGraphicsEllipseItem*)),
-//            this, SLOT(ellipseItemInserted(MyGraphicsEllipseItem*)));
-//    connect(scene, SIGNAL(polygonItemInserted(MyGraphicsPolygonItem*)),
-//            this, SLOT(polygonItemInserted(MyGraphicsPolygonItem*)));
-//    connect(scene, SIGNAL(myItemInserted(MyGraphicsItem *)),
-//            this, SLOT(myItemInserted(MyGraphicsItem*)));
     connect(scene, SIGNAL(cgqItemInserted(MyCGQItem*)),
             this, SLOT(cgqItemInserted(MyCGQItem*)));
     connect(scene, SIGNAL(zxqItemInserted(MyZXQItem*)),
@@ -76,8 +83,8 @@ GraphicWidget::~GraphicWidget()
 {
     delete ui;
     QSqlQuery query;
-    if(query.exec("DROP TABLES property, sensorvariable;")){
-        qDebug() << "TABLE property and sensorvariable have been successfully dropped!";
+    if(query.exec("DROP TABLES property, sensorvariable, itemcount;")){
+        qDebug() << "TABLE property、sensorvariable and itemcount have been successfully dropped!";
     }
 }
 
@@ -173,8 +180,6 @@ void GraphicWidget::createAction()
     deleteAction = new QAction(QIcon(":/images/delete.png"), tr("&delete"), this);
     deleteAction->setShortcut(tr("Delete"));
     connect(deleteAction, SIGNAL(triggered(bool)), this, SLOT(deleteItem()));
-//    propertyAction = new QAction(tr("属性设置"));
-//    connect(propertyAction, SIGNAL(triggered(bool)), this, SLOT(showPropertyDialog()));
 }
 
 void GraphicWidget::cgqButtonGroupClicked(int id)
@@ -184,7 +189,10 @@ void GraphicWidget::cgqButtonGroupClicked(int id)
         if(cgqButtonGroup->button(id) != button)
             button->setChecked(false);
     }
-
+    if(zxqButtonGroup->checkedButton())
+        zxqButtonGroup->checkedButton()->setChecked(false);
+    if(kzqButtonGroup->checkedButton())
+        kzqButtonGroup->checkedButton()->setChecked(false);
     scene->setMode(MyGraphicsScene::InsertCGQItem);
     scene->setCGQType(MyCGQItem::CGQType(id));
 }
@@ -196,7 +204,10 @@ void GraphicWidget::zxqButtonGroupClicked(int id)
         if(zxqButtonGroup->button(id) != button)
             button->setChecked(false);
     }
-
+    if(cgqButtonGroup->checkedButton())
+        cgqButtonGroup->checkedButton()->setChecked(false);
+    if(kzqButtonGroup->checkedButton())
+        kzqButtonGroup->checkedButton()->setChecked(false);
     scene->setMode(MyGraphicsScene::InsertZXQItem);
     scene->setZXQType(MyZXQItem::ZXQType(id));
 }
@@ -208,7 +219,10 @@ void GraphicWidget::kzqButtonGroupClicked(int id)
         if(kzqButtonGroup->button(id) != button)
             button->setChecked(false);
     }
-
+    if(zxqButtonGroup->checkedButton())
+        zxqButtonGroup->checkedButton()->setChecked(false);
+    if(cgqButtonGroup->checkedButton())
+        cgqButtonGroup->checkedButton()->setChecked(false);
     scene->setMode(MyGraphicsScene::InsertKZQItem);
     scene->setKZQType(MyKZQItem::KZQType(id));
 }
@@ -259,11 +273,6 @@ void GraphicWidget::deleteItem()
             else if(item->type() == MyKZQItem::Type){
                  MyKZQItem *tmp = qgraphicsitem_cast<MyKZQItem *>(item);
                  tmp->removeArrows();
-//                 MyKZQItem::KZQType t = tmp->kzqType();
-//                 if(t == MyKZQItem::Begain)
-//                     scene->setBegainModelState(false);
-//                 else if(t == MyKZQItem::End)
-//                     scene->setEndModelState(false);
              }
              scene->removeItem(item);
              QString modulename = ((ModelGraphicsItem*)item)->getName();
@@ -329,33 +338,11 @@ void GraphicWidget::deleteItem()
     }
 }
 
-void GraphicWidget::showPropertyDialog()
-{/*
-    QGraphicsItem *item = scene->selectedItems().first();
-    if(MyZXQItemType == item->type()){
-        MyZXQItem *zxqitem = static_cast<MyZXQItem*> (item);
-        switch(zxqitem->zxqType()){
-            case MyZXQItem::MotorStart:{
-                StartMotorDialog dlg;
-                dlg.exec();
-            break;
-            }
-            case MyZXQItem::MotorStop:{
-                StopMotorDialog dlg;
-                dlg.exec();
-            break;
-            }
-            default:
-                ;
-        }
-    }*/
-}
-
 QWidget *GraphicWidget::createCGQCellWidget(const QString &text, MyCGQItem::CGQType cgqType, const QString &image)
 {
     QToolButton *button = new QToolButton;
     button->setCheckable(true);
-
+//    button->setFixedSize(50, 50);
     button->setIcon(QIcon(image));
     button->setIconSize(QSize(50, 50));
     cgqButtonGroup->addButton(button, (int)cgqType);
@@ -363,7 +350,6 @@ QWidget *GraphicWidget::createCGQCellWidget(const QString &text, MyCGQItem::CGQT
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(button, 0, 0, Qt::AlignHCenter);
     layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
-
     QWidget *widget =  new QWidget;
     widget->setLayout(layout);
 
@@ -406,59 +392,4 @@ QWidget *GraphicWidget::createKZQCellWidget(const QString &text, MyKZQItem::KZQT
 
     return widget;
 }
-//QWidget *GraphicWidget::createPolygonCellWidget(const QString &text, MyGraphicsPolygonItem::PolygonType itemType)
-//{
 
-//    MyGraphicsPolygonItem item(itemMenu, itemType);
-//    QIcon icon(item.image());
-//    QToolButton *button = new QToolButton;
-//    button->setCheckable(true);
-//    button->setIcon(icon);
-//    button->setIconSize(QSize(50, 50));
-//    buttonGroup->addButton(button, int(itemType) + int(Polygon));
-
-//    QGridLayout *layout = new QGridLayout;
-//    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
-//    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
-
-//    QWidget *widget =  new QWidget;
-//    widget->setLayout(layout);
-
-//    return widget;
-//}
-//QWidget *GraphicWidget::createEllipseCellWidget(const QString &text, InsertItemType itemType)
-//{
-//    MyGraphicsEllipseItem *item = new MyGraphicsEllipseItem(itemMenu);
-//    QToolButton *button = new QToolButton;
-//    button->setCheckable(true);
-//    button->setIcon(QIcon(QPixmap(item->image())));
-//    button->setIconSize(QSize(50, 50));
-//    buttonGroup->addButton(button, int(itemType));
-
-//    QGridLayout *layout = new QGridLayout;
-//    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
-//    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
-
-//    QWidget *widget =  new QWidget;
-//    widget->setLayout(layout);
-
-//    return widget;
-//}
-
-//QWidget *GraphicWidget::createBackgroundCellWidget(const QString &text, const QString &image)
-//{
-//    QToolButton *button = new QToolButton;
-//    button->setText(text);
-//    button->setIcon(QIcon(image));
-//    button->setIconSize(QSize(50, 50));
-//    backgroundButtonGroup->addButton(button);
-
-//    QGridLayout *layout = new QGridLayout;
-//    layout->addWidget(button, 0, 0, Qt::AlignHCenter);
-//    layout->addWidget(new QLabel(text), 1, 0, Qt::AlignCenter);
-
-//    QWidget *widget = new QWidget;
-//    widget->setLayout(layout);
-
-//    return widget;
-//}

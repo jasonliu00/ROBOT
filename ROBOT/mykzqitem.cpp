@@ -91,22 +91,22 @@ QVector<QPointF> MyKZQItem::startPointToPaintArrow(QPointF &point, bool notfirst
     return vector;
 }
 
-QPointF MyKZQItem::startPointToPaintArrow(QPointF &point)
-{
-    switch(myKZQType){
-        case Begain:
-        return mapToScene(begainStartPoint);
-        break;
-        case Panduan:
-        if(myPdModelOutArea.YStartArea.contains(point))
-            return mapToScene(panduanYStartPoint);
-        if(myPdModelOutArea.NStartArea.contains(point))
-            return mapToScene(panduanNStartPoint);
-        break;
-        default:
-        break;
-    }
-}
+//QPointF MyKZQItem::startPointToPaintArrow(QPointF &point)
+//{
+//    switch(myKZQType){
+//        case Begain:
+//        return mapToScene(begainStartPoint);
+//        break;
+//        case Panduan:
+//        if(myPdModelOutArea.YStartArea.contains(point))
+//            return mapToScene(panduanYStartPoint);
+//        if(myPdModelOutArea.NStartArea.contains(point))
+//            return mapToScene(panduanNStartPoint);
+//        break;
+//        default:
+//        break;
+//    }
+//}
 
 QPointF MyKZQItem::endPointToPaintArrow(QPointF &point)
 {
@@ -249,37 +249,30 @@ void MyKZQItem::showPropertyDlg()
             QString content;
             if(panduanDialogData.tj2_isEnable){
                 if(panduanDialogData.tj2_logicVersusTj1 == "与")
-                    content = QString("%1%2%3&&%4%5%6").arg(panduanDialogData.tj1_variableName)
+                    content = QString("(%1%2%3)&&(%4%5%6)").arg(panduanDialogData.tj1_variableName)
                                                        .arg(panduanDialogData.tj1_operator)
-                                                       .arg(panduanDialogData.tj1_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0')) //下位机为解析方便需要将数字补齐为3位数
+                                                       .arg(panduanDialogData.tj1_compareContent.toInt())
                                                        .arg(panduanDialogData.tj2_variableName)
                                                        .arg(panduanDialogData.tj2_operator)
-                                                       .arg(panduanDialogData.tj2_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0'));
+                                                       .arg(panduanDialogData.tj2_compareContent.toInt());
                 else if(panduanDialogData.tj2_logicVersusTj1 == "或")
-                    content = QString("%1%2%3||%4%5%6").arg(panduanDialogData.tj1_variableName)
+                    content = QString("(%1%2%3)||(%4%5%6)").arg(panduanDialogData.tj1_variableName)
                                                        .arg(panduanDialogData.tj1_operator)
-                                                       .arg(panduanDialogData.tj1_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0'))
+                                                       .arg(panduanDialogData.tj1_compareContent.toInt())
                                                        .arg(panduanDialogData.tj2_variableName)
                                                        .arg(panduanDialogData.tj2_operator)
-                                                       .arg(panduanDialogData.tj2_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0'));
-                else
-                    content = QString("%1%2%3!%4%5%6").arg(panduanDialogData.tj1_variableName)
-                                                       .arg(panduanDialogData.tj1_operator)
-                                                       .arg(panduanDialogData.tj1_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0'))
-                                                       .arg(panduanDialogData.tj2_variableName)
-                                                       .arg(panduanDialogData.tj2_operator)
-                                                       .arg(panduanDialogData.tj2_compareContent.toInt(),
-                                                            3, 10, QLatin1Char('0'));
+                                                       .arg(panduanDialogData.tj2_compareContent.toInt());
+//                else
+//                    content = QString("(%1%2%3)!(%4%5%6)").arg(panduanDialogData.tj1_variableName)
+//                                                       .arg(panduanDialogData.tj1_operator)
+//                                                       .arg(panduanDialogData.tj1_compareContent.toInt())
+//                                                       .arg(panduanDialogData.tj2_variableName)
+//                                                       .arg(panduanDialogData.tj2_operator)
+//                                                       .arg(panduanDialogData.tj2_compareContent.toInt());
             }else{
-                content = QString("%1%2%3").arg(panduanDialogData.tj1_variableName)
+                content = QString("(%1%2%3)&&(/)").arg(panduanDialogData.tj1_variableName)
                                                    .arg(panduanDialogData.tj1_operator)
-                                                   .arg(panduanDialogData.tj1_compareContent.toInt(),
-                                                        3, 10, QLatin1Char('0'));
+                                                   .arg(panduanDialogData.tj1_compareContent.toInt());
             }
             query.prepare("UPDATE property SET content = :content "
                           "WHERE name = :name;");
@@ -303,7 +296,7 @@ void MyKZQItem::drawAngle(QPainter *painter, QPointF startpoint, QPointF midpoin
 
 void MyKZQItem::createContextMenu()
 {
-    QAction *action;
+    QAction *action = nullptr;
     foreach(action, myContextMenu->actions()){
         if(action->text() == tr("&delete"))
             break;

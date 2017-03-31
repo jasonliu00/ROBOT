@@ -48,8 +48,7 @@ private slots:
 private:
     Ui::RobotMainWindow *ui;
 
-    QAction *exitAction;
-//    QAction *addAction;
+//    QAction *exitAction;
     QAction *deleteAction;
 
     QAction *toFrontAction;

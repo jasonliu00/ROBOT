@@ -18,7 +18,7 @@ public:
     void drawAngle(QPainter *painter, QPointF startpoint, QPointF midpoint, QPointF endpoint);
 
     virtual QVector<QPointF> startPointToPaintArrow(QPointF &point, bool notfirsttime) = 0;
-    virtual QPointF startPointToPaintArrow(QPointF &point) = 0;
+//    virtual QPointF startPointToPaintArrow(QPointF &point) = 0;
     virtual QPointF endPointToPaintArrow(QPointF &point) = 0;
     virtual int getChildType() const = 0;
 protected:
